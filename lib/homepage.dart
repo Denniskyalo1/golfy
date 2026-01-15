@@ -38,7 +38,8 @@ class _HomepageState extends State<Homepage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.tealAccent[100],
+        backgroundColor: Colors.white
+        ,
         actions: [
           IconButton(
             onPressed: () {},
@@ -75,7 +76,7 @@ class _HomepageState extends State<Homepage> {
 
                   _drawerItem(Icons.home, 'Profile', () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/profile');
+                    Navigator.pushNamed(context, '/register');
                   }),
                   _drawerItem(Icons.golf_course, 'Golf Courses', () {
                     Navigator.pop(context);
@@ -126,9 +127,10 @@ class _HomepageState extends State<Homepage> {
       body: SizedBox.expand(
         child: Stack(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.tealAccent[100],
+            Positioned.fill(
+              child: Image(
+                image: AssetImage('images/wallpaper.jpg'),
+                fit: BoxFit.cover,
               ),
             ),
             SafeArea(
@@ -161,6 +163,17 @@ class _HomepageState extends State<Homepage> {
                       ),
                     ),
                   ),
+                   SizedBox(height: height * 0.04,),
+                  Padding(
+                    padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05),
+                    child: Container(
+                      height: height * 0.35,
+                      decoration: BoxDecoration(
+                        color: Colors.yellow,
+                        borderRadius: BorderRadius.all(Radius.circular(15))
+                      ),
+                    ),
+                  )
                 ],
               ),
             )

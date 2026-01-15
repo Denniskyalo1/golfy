@@ -11,6 +11,7 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+images/Postman (x64).exe
 
 # IntelliJ related
 *.iml
