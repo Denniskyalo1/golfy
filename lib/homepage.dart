@@ -114,7 +114,7 @@ class _HomepageState extends State<Homepage> {
                       ),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.pushNamed(context, '/login');
+                        Navigator.pushNamed(context, '/');
                       },
                     ),
                   ),
