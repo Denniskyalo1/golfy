@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -86,6 +87,22 @@ class _HomepageState extends State<Homepage> {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, '/myGames');
                   }),
+                  ListTile(
+                    leading: SvgPicture.asset(
+                      'images/clubs.svg',
+                      width: 24,
+                      height: 24,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    title: Text('My Clubs'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/myClubs');
+                    },
+                  ),
                   _drawerItem(Icons.group, 'Friends', () {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, '/friends');
