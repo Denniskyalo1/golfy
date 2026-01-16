@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'auth_services.dart';
 import 'constants.dart';
 
 class Login extends StatefulWidget {
@@ -95,8 +96,34 @@ class _LoginState extends State<Login> {
                                                       borderRadius: BorderRadius.circular(15)
                                                   )
                                               ),
-                                              onPressed: () {
-                                                Navigator.pushReplacementNamed(context, '/register');
+                                              onPressed: () async {
+                                                final email = widget.emailController.text.trim();
+                                                final password = widget.passwordController.text;
+
+                                                if(email.isEmpty || password.isEmpty ){
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                      SnackBar(content: Text('Please fill in all the fields'))
+                                                  );
+                                                  return;
+                                                }
+                                                try {
+                                                  final response = await AuthService.login(
+                                                    email: email,
+                                                    password: password,
+                                                  );
+
+                                                  if (context.mounted) {
+                                                    if (response['message'] != null) {
+                                                      Navigator.pushReplacementNamed(
+                                                          context, '/login');
+                                                    }
+                                                  }
+                                                }
+                                                catch (e) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(content: Text('Login failed')),
+                                                  );
+                                                }
                                               },
                                               child: const Text(
                                                 'Login',

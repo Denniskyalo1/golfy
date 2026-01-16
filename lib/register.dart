@@ -178,7 +178,9 @@ class _RegisterState extends State<Register> {
                               right: width * 0.05
                           ),
                           child: GestureDetector(
-                            onTap: ()  {},
+                            onTap: () async {
+                              Navigator.of(context).pushReplacementNamed('/login');
+                            },
 
 
                             child: Text(
