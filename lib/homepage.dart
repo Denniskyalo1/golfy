@@ -93,14 +93,30 @@ class _HomepageState extends State<Homepage> {
                   ),
 
                   _drawerItem(Icons.home, 'Profile', () {
+                    if(userName.isEmpty){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Please log in first before proceeding.'))
+                      );
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/login');
+                      return;
+                    }
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/register');
+                    Navigator.pushNamed(context, '/profile');
                   }),
                   _drawerItem(Icons.golf_course, 'Golf Courses', () {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, '/golfCourses');
                   }),
                   _drawerItem(Icons.sports_golf, 'My Games', () {
+                    if(userName.isEmpty){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Please log in first before proceeding.'))
+                      );
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/login');
+                      return;
+                    }
                     Navigator.pop(context);
                     Navigator.pushNamed(context, '/myGames');
                   }),
@@ -116,11 +132,27 @@ class _HomepageState extends State<Homepage> {
                     ),
                     title: Text('My Clubs'),
                     onTap: () {
+                      if(userName.isEmpty){
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Please log in first before proceeding.'))
+                        );
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/login');
+                        return;
+                      }
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/myClubs');
                     },
                   ),
                   _drawerItem(Icons.group, 'Friends', () {
+                    if(userName.isEmpty){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Please log in first before proceeding.'))
+                      );
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/login');
+                      return;
+                    }
                     Navigator.pop(context);
                     Navigator.pushNamed(context, '/friends');
                   }),
