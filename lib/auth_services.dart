@@ -1,14 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'constants.dart';
 
 class AuthService {
-  static const String baseUrl = "";
 
   static Future<Map<String, dynamic>> register({
     required String name,
     required String email,
     required String password,
     required String passwordConfirmation,
+    required String role,
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/register'),
@@ -21,27 +22,45 @@ class AuthService {
         'email': email,
         'password': password,
         'password_confirmation': passwordConfirmation,
+        'role': role,
       }),
     );
 
-    return jsonDecode(response.body);
+    return {
+      'status': response.statusCode,
+      'body': jsonDecode(response.body),
+    };
   }
 
   static Future<Map<String, dynamic>> login({
     required String email,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/login'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
-    );
-    return jsonDecode(response.body);
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/login'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      final body = response.body.isNotEmpty ? jsonDecode(response.body) : {};
+
+      return {
+        'status': response.statusCode,
+        'body': body,
+      };
+    } catch (e) {
+      return {
+        'status': 500,
+        'body': {'message': 'Server error. Please try again.'},
+      };
+    }
   }
+
 }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'auth_services.dart';
 import 'constants.dart';
+import 'user_prefs.dart';
 
 class Login extends StatefulWidget {
   Login({super.key});
@@ -96,36 +97,56 @@ class _LoginState extends State<Login> {
                                                       borderRadius: BorderRadius.circular(15)
                                                   )
                                               ),
-                                              onPressed: () async {
-                                                final email = widget.emailController.text.trim();
-                                                final password = widget.passwordController.text;
+                                            onPressed: () async {
+                                              final email = widget.emailController.text.trim();
+                                              final password = widget.passwordController.text;
 
-                                                if(email.isEmpty || password.isEmpty ){
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                      SnackBar(content: Text('Please fill in all the fields'))
+                                              if (email.isEmpty || password.isEmpty) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(content: Text('Please fill in all the fields')),
+                                                );
+                                                return;
+                                              }
+
+                                              try {
+                                                final result = await AuthService.login(
+                                                  email: email,
+                                                  password: password,
+                                                );
+
+                                                if (!context.mounted) return;
+
+                                                final status = result['status'];
+                                                final body = result['body'];
+
+                                                if (status == 200 && body['user'] != null) {
+                                                  final user = body['user'];
+                                                  await UserPrefs.saveUser(
+                                                    name: user['name'],
+                                                    email: user['email'],
+                                                    role: user['role'],
+                                                    token: user['token']
                                                   );
-                                                  return;
-                                                }
-                                                try {
-                                                  final response = await AuthService.login(
-                                                    email: email,
-                                                    password: password,
+                                                  if (!context.mounted) return;
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Login successful')),
                                                   );
 
-                                                  if (context.mounted) {
-                                                    if (response['message'] != null) {
-                                                      Navigator.pushReplacementNamed(
-                                                          context, '/login');
-                                                    }
-                                                  }
-                                                }
-                                                catch (e) {
+                                                  Navigator.pushReplacementNamed(context, '/homePage');
+                                                } else {
                                                   ScaffoldMessenger.of(context).showSnackBar(
-                                                    const SnackBar(content: Text('Login failed')),
+                                                    SnackBar(content: Text(body['message'] ?? 'Login failed')),
                                                   );
                                                 }
-                                              },
-                                              child: const Text(
+                                              } catch (e) {
+                                                print('Login error: $e');
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(content: Text('Server error. Please try again.')),
+                                                );
+                                              }
+
+                                            },
+                                            child: const Text(
                                                 'Login',
                                                 style: TextStyle(
                                                   color: Colors.white,

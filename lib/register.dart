@@ -1,9 +1,10 @@
 import 'dart:ui';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart';
 import 'auth_services.dart';
-
+import 'user_prefs.dart';
 
 class Register extends StatefulWidget {
   Register({super.key});
@@ -18,6 +19,14 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  List<String> roles = [
+    'player',
+    'manager',
+    'caddie'
+  ];
+
+  String? selectedRole;
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -88,13 +97,46 @@ class _RegisterState extends State<Register> {
                                         obscureText: false,
                                       ),
                                       SizedBox(height: height*0.03,),
+                                      Container(
+                                        height: 55,
+                                        padding: EdgeInsets.only(right: width*0.05),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: DropdownButtonHideUnderline(
+                                            child: DropdownButton2<String>(
+                                              isExpanded: true,
+                                              hint: Text(
+                                                'Select role',
+                                                style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w500),
+                                              ),
+                                            value: selectedRole,
+                                            items: roles.map((role) {
+                                              return DropdownMenuItem<String>(
+                                                value: role,
+                                                child: Text(
+                                                  role == 'manager'
+                                                      ? 'Course Manager'
+                                                      : role[0].toUpperCase() + role.substring(1),
+                                                ),
+                                              );
+                                            }).toList(),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                selectedRole = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: height*0.03,),
                                       CustomTextField(
                                         controller: widget.passwordController,
                                         hintText: 'Password',
                                         obscureText: true,
                                       ),
                                       SizedBox(height: height*0.03,),
-
                                       CustomTextField(
                                         controller: widget.passwordConfirmController,
                                         hintText: 'Confirm Password',
@@ -132,25 +174,68 @@ class _RegisterState extends State<Register> {
                                                 return;
                                               }
 
+                                              if (selectedRole == null) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(content: Text('Please select a role')),
+                                                );
+                                                return;
+                                              }
+
                                               try {
-                                                final response = await AuthService.register(
+                                                final result = await AuthService.register(
                                                   name: name,
                                                   email: email,
                                                   password: password,
                                                   passwordConfirmation: confirmPassword,
+                                                  role: selectedRole!,
                                                 );
 
-                                                if (context.mounted) {
-                                                  if (response['message'] != null) {
-                                                    Navigator.pushReplacementNamed(
-                                                        context, '/login');
-                                                  }
-                                                  }
-                                                 }
-                                                 catch (e) {
+                                                if (!context.mounted) return;
+
+                                                final status = result['status'];
+                                                final body = result['body'];
+
+                                                final user = body['user'];
+                                                await UserPrefs.saveUser(
+                                                  name: user['name'],
+                                                  email: user['email'],
+                                                  role: user['role'],
+                                                  token: user['token']
+                                                );
+
+                                                //Successful registration
+                                                if(!context.mounted) return;
+                                                if (status == 201) {
                                                   ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(content: Text('Registration failed')),
+                                                    SnackBar(content: Text(body['message'] ?? 'Registration successful')),
                                                   );
+
+                                                  Navigator.pushReplacementNamed(context, '/homePage');
+                                                  return;
+                                                }
+
+                                                //Validation errors
+                                                if(!context.mounted) return;
+                                                if (status == 422 && body['errors'] != null) {
+                                                  final errors = body['errors'] as Map<String, dynamic>;
+                                                  final firstError = errors.values.first[0];
+
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text(firstError)),
+                                                  );
+                                                  return;
+                                                }
+
+                                                if(!context.mounted) return;
+
+                                                //Other errors
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(content: Text(body['message'] ?? 'Registration failed')),
+                                                );
+                                              } catch (e) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(content: Text('Server error. Please try again.')),
+                                                );
                                               }
                                             },
                                             child: const Text(
@@ -181,8 +266,6 @@ class _RegisterState extends State<Register> {
                             onTap: () async {
                               Navigator.of(context).pushReplacementNamed('/login');
                             },
-
-
                             child: Text(
                               'Already have an account? Login',
                               style: TextStyle(

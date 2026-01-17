@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'user_prefs.dart';
+import 'user_prefs.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -10,6 +12,20 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  String userName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserName();
+  }
+
+  void loadUserName() async {
+    final name = await UserPrefs.getUserName();
+    setState(() {
+      userName = name ?? '';
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -33,12 +49,13 @@ class _HomepageState extends State<Homepage> {
       appBar: AppBar(
         elevation: 0,
         title: Text(
-          'G O L F Y',
+          'P A R F E C T',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
+        centerTitle: true,
         backgroundColor: Colors.white
         ,
         actions: [
@@ -129,9 +146,16 @@ class _HomepageState extends State<Homepage> {
                           fontSize: height * 0.02,
                         ),
                       ),
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
-                        Navigator.pushNamed(context, '/');
+                        await UserPrefs.clearUser();
+                        if (context.mounted) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/login',
+                                (route) => false,
+                          );
+                        }
                       },
                     ),
                   ),
@@ -172,7 +196,7 @@ class _HomepageState extends State<Homepage> {
                   Padding(
                     padding: EdgeInsets.only(left: width * 0.05),
                     child: Text(
-                      'DENNIS KYALO',
+                      userName,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: height * 0.05,
