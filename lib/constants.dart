@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const String baseUrl = "http://10.0.2.2:8000/api";
+
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final Color backgroundColor;
@@ -69,7 +71,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return TextField(
       controller: widget.controller,
       obscureText: widget.obscureText,
-
       decoration: InputDecoration(
         fillColor: Colors.white,
       filled: true,
