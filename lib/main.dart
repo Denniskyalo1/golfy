@@ -5,6 +5,7 @@ import 'homepage.dart';
 import 'register.dart';
 import 'login.dart';
 import 'user_prefs.dart';
+import 'profile.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => Register(),
         '/login': (context) => Login(),
         '/landing': (context) => const LandingPage(),
+        '/profile': (context) => const Profile(),
       },
     );
   }
