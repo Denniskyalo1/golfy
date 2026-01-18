@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'constants.dart';
 import 'user_prefs.dart';
-
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -12,6 +10,45 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  void _showDialog(){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text('Log Out'),
+            content: Text(
+              'Are you sure you want to Log out? Click yes to proceed.',
+            ),
+            actions: [
+              MaterialButton(
+                  onPressed: (){},
+                child: Text('No'),
+              ),
+              MaterialButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await UserPrefs.clearUser();
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/login',
+                          (route) => false,
+                    );
+                  }
+                },
+                child: Text('Yes',
+                style: TextStyle(
+                  color: Colors.red
+                ),),
+
+              )
+            ],
+
+          );
+        }
+    );
+
+  }
 
   String userName = '';
   String userEmail = '';
@@ -28,486 +65,342 @@ class _ProfileState extends State<Profile> {
     setState(() {
       userName = name ?? '';
       userEmail = email ?? '';
-
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
-   return Scaffold(
-     backgroundColor: Colors.blueGrey[100],
-     appBar: AppBar(
-       title: Text(
-         'P R O F I L E ',
-         style: TextStyle(
-           color: Colors.black,
-           fontWeight: FontWeight.bold,
-           fontSize: height * 0.025,
-         ),
-       ),
-       centerTitle: true,
-       backgroundColor: Colors.white,
-     ),
-     body: Column(
-       mainAxisAlignment: MainAxisAlignment.start,
-       crossAxisAlignment: CrossAxisAlignment.start,
-       children: [
-         //user details
-         Container(
-           height: height * 0.15,
-           decoration: BoxDecoration(
-             color: Colors.white,
-             borderRadius: BorderRadius.only(bottomRight: Radius.circular(15), bottomLeft: Radius.circular(15)),
-           ),
-           child: Padding(
-             padding: EdgeInsets.only(top: height*0.02),
-             child: Row(
-               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-               mainAxisSize: MainAxisSize.max,
-               crossAxisAlignment: CrossAxisAlignment.start,
-               children: [
-                 Row(
-                   children: [
-                     Padding(
-                       padding: const EdgeInsets.all(8.0),
-                       child: Container(
-                         decoration:BoxDecoration(
-                           color: Colors.grey[300],
-                           borderRadius: BorderRadius.circular(50),
-                           image: DecorationImage(
-                               image: AssetImage('images/profilepic.png'),
-                             fit: BoxFit.cover,
-                           )
-                         ),
-                         height: height * 0.11,
-                         width: height*0.11,
-                       ),
-                     ),
-                     Padding(
-                       padding: const EdgeInsets.all(8.0),
-                       child: Column(
-                         children: [
-                           Container(
-                             decoration: BoxDecoration(
-                               color: Colors.white,
-                             ),
-                             height: height*0.06,
-                             width: width*0.4,
-                             child: Column(
-                               crossAxisAlignment: CrossAxisAlignment.start,
-                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                               children: [
-                                 Text(
-                                   userName,
-                                   style:TextStyle(
-                                     color: Colors.black,
-                                     fontSize: height*0.02,
-                                     fontWeight: FontWeight.w400,
-                                   ),
-                                 ),
-                                 Text(
-                                   userEmail,
-                                   style:TextStyle(
-                                     color: Colors.grey,
-                                     fontSize: height*0.02,
-                                     fontWeight: FontWeight.w300,
-                                   ),
-                                 )
-                               ],
-                             ),
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
 
-                           ),
-                           Padding(
-                             padding: EdgeInsets.only(top: height*0.02),
-                             child: Container(
-                               decoration: BoxDecoration(
-                                 color: Colors.white,
-                               ),
-                               width: width*0.4,
-                               child: Column(
-                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                 children: [
-                                   Text(
-                                     'Handicap',
-                                     style:TextStyle(
-                                       color: Colors.blueAccent,
-                                       fontSize: height*0.02,
-                                       fontWeight: FontWeight.w400,
-                                     ),
-                                   ),
+    return Scaffold(
+      backgroundColor: Colors.blueGrey[100],
+      appBar: AppBar(
+        title: Text(
+          'P R O F I L E',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: height * 0.025,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // USER DETAILS
+            Container(
+              width: width,
+              height: height * 0.15,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.only(top: height * 0.02),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: height * 0.11,
+                            width: height * 0.11,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(50),
+                              image: const DecorationImage(
+                                image: AssetImage('images/profilepic.png'),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: width * 0.4,
+                                child: Text(
+                                  userName,
+                                  style: TextStyle(
+                                    fontSize: height * 0.02,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: width * 0.4,
+                                child: Text(
+                                  userEmail,
+                                  style: TextStyle(
+                                    fontSize: height * 0.018,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: height * 0.015),
+                              Text(
+                                'Handicap',
+                                style: TextStyle(
+                                  color: Colors.blueAccent,
+                                  fontSize: height * 0.02,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.arrow_forward_ios,
+                        size: height * 0.02,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
 
-                                 ],
-                               ),
+            SizedBox(height: height * 0.03),
 
-                             ),
-                           ),
-                         ],
-                       ),
-                     ),
-                   ],
-                 ),
-                 IconButton(
-                     onPressed: (){},
-                     icon: Icon(
-                       Icons.arrow_forward_ios,
-                       color: Colors.blueAccent,
-                       size: height*0.02,
-                     ),
-                 ),
+            // PLAYER PERFORMANCE
+            sectionTitle('Player Performance', height),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  ProfileOptionTile(
+                    leading: Icon(Icons.h_plus_mobiledata, size: height * 0.03),
+                    title: 'Handicap Details',
+                    onTap: (){},
+                  ),
+                  ProfileOptionTile(
+                    leading: Icon(Icons.access_time, size: height * 0.03),
+                    title: 'Recent Rounds',
+                    onTap: (){},
+                  ),
+                  ProfileOptionTile(
+                    leading: Icon(Icons.score_sharp, size: height * 0.03),
+                    title: 'Scoring History',
+                    onTap: (){},
+                  ),
+                  ProfileOptionTile(
+                    leading: Icon(Icons.golf_course, size: height * 0.03),
+                    title: 'Recent Courses',
+                    showDivider: false,
+                    onTap: (){},
+                  ),
+                ],
+              ),
+            ),
 
-               ],
-             ),
-           ),
+            SizedBox(height: height * 0.03),
 
-         ),
-         SizedBox(height: height*0.04),
-         //Player Performance
-         Padding(
-           padding:  EdgeInsets.only(left: width*0.05),
-           child: Text(
-             'Player Performance',
-             style: TextStyle(
-               color: Colors.black54,
-               fontWeight: FontWeight.w500,
-               fontSize: height*0.02,
-             ),
-           ),
-         ),
-         SizedBox(height: height*0.01),
-         Container(
-           //height: height*0.25,
-           decoration: BoxDecoration(
-             color: Colors.white,
-             borderRadius: BorderRadius.all(Radius.circular(20)),
-           ),
-           child:Column(
-             mainAxisAlignment: MainAxisAlignment.start,
-             crossAxisAlignment: CrossAxisAlignment.start,
-             children: [
-               Padding(
-                 padding: EdgeInsets.symmetric(
-                   horizontal: width * 0.05,
-                   vertical: height * 0.02,
-                 ),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     Row(
-                       children: [
-                         Icon(
-                           Icons.h_plus_mobiledata,
-                           color: Colors.black,
-                           size: height*0.03,
-                         ),
-                         SizedBox(width: width * 0.03),
-                         Text(
-                           'Handicap Details',
-                           style: TextStyle(
-                             color: Colors.black,
-                             fontSize: height * 0.02,
-                             fontWeight: FontWeight.w400,
-                           ),
-                         ),
-                       ],
-                     ),
-                     Icon(
-                       Icons.arrow_forward_ios,
-                       color: Colors.blueAccent,
-                       size: height * 0.02,
-                     ),
-                   ],
-                 ),
-               ),
-               Padding(
-                 padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-                 child: Container(
-                   height: 1.1,
-                   color: Colors.black26,
-                 ),
-               ),
+            // GAME SETTINGS
+            sectionTitle('Game Settings', height),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  ProfileOptionTile(
+                    leading: Icon(Icons.grid_on_rounded, size: height * 0.03),
+                    title: 'Scoring Display',
+                    onTap: (){},
+                  ),
+                  ProfileOptionTile(
+                    leading: Icon(Icons.map_sharp, size: height * 0.03),
+                    title: 'Maps Settings',
+                    onTap: (){},
+                  ),
+                  ProfileOptionTile(
+                    leading: SvgPicture.asset(
+                      'images/clubs.svg',
+                      width: height * 0.03,
+                      height: height * 0.03,
+                    ),
+                    title: 'Clubs Settings',
+                    showDivider: false,
+                    onTap: (){},
+                  ),
+                ],
+              ),
+            ),
 
-               Padding(
-                 padding: EdgeInsets.symmetric(
-                   horizontal: width * 0.05,
-                   vertical: height * 0.02,
-                 ),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     Row(
-                       children: [
-                         Icon(
-                           Icons.access_time,
-                           color: Colors.black,
-                           size: height*0.03,
-                         ),
-                         SizedBox(width: width * 0.03),
-                         Text(
-                           'Recent Rounds',
-                           style: TextStyle(
-                             color: Colors.black,
-                             fontSize: height * 0.02,
-                             fontWeight: FontWeight.w400,
-                           ),
-                         ),
-                       ],
-                     ),
-                     Icon(
-                       Icons.arrow_forward_ios,
-                       color: Colors.blueAccent,
-                       size: height * 0.02,
-                     ),
-                   ],
-                 ),
-               ),
-               Padding(
-                 padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-                 child: Container(
-                   height: 1.1,
-                   color: Colors.black26,
-                 ),
-               ),
+            SizedBox(height: height * 0.03),
 
-               Padding(
-                 padding: EdgeInsets.symmetric(
-                   horizontal: width * 0.05,
-                   vertical: height * 0.02,
-                 ),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     Row(
-                       children: [
-                         Icon(
-                           Icons.score_sharp,
-                           color: Colors.black,
-                           size: height*0.03,
-                         ),
-                         SizedBox(width: width * 0.03),
-                         Text(
-                           'Scoring History',
-                           style: TextStyle(
-                             color: Colors.black,
-                             fontSize: height * 0.02,
-                             fontWeight: FontWeight.w400,
-                           ),
-                         ),
-                       ],
-                     ),
-                     Icon(
-                       Icons.arrow_forward_ios,
-                       color: Colors.blueAccent,
-                       size: height * 0.02,
-                     ),
-                   ],
-                 ),
-               ),
-               Padding(
-                 padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-                 child: Container(
-                   height: 1.1,
-                   color: Colors.black26,
-                 ),
-               ),
+            // ACHIEVEMENTS & BADGES
+            sectionTitle('Achievements & Badges', height),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  ProfileOptionTile(
+                    leading: Icon(Icons.emoji_events, size: height * 0.03),
+                    title: 'Achievements',
+                    onTap: (){},
+                  ),
+                  ProfileOptionTile(
+                    leading: Icon(Icons.workspace_premium, size: height * 0.03),
+                    title: 'Badges',
+                    showDivider: false,
+                    onTap: (){},
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: height * 0.05),
 
-               Padding(
-                 padding: EdgeInsets.symmetric(
-                   horizontal: width * 0.05,
-                   vertical: height * 0.02,
-                 ),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     Row(
-                       children: [
-                         Icon(
-                           Icons.golf_course,
-                           color: Colors.black,
-                           size: height*0.03,
-                         ),
-                         SizedBox(width: width * 0.03),
-                         Text(
-                           'Recent Courses',
-                           style: TextStyle(
-                             color: Colors.black,
-                             fontSize: height * 0.02,
-                             fontWeight: FontWeight.w400,
-                           ),
-                         ),
-                       ],
-                     ),
-                     Icon(
-                       Icons.arrow_forward_ios,
-                       color: Colors.blueAccent,
-                       size: height * 0.02,
-                     ),
-                   ],
-                 ),
-               ),
+            //App & Support
+            sectionTitle('App & Support', height),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  ProfileOptionTile(
+                    leading: Icon(Icons.contact_support, size: height * 0.03),
+                    title: 'Help & Support',
+                    onTap: (){},
+                  ),
+                  ProfileOptionTile(
+                    leading: Icon(Icons.feedback, size: height * 0.03),
+                    title: 'Feedback',
+                    onTap: (){},
+                  ),
+                  ProfileOptionTile(
+                    leading: Icon(Icons.info_rounded, size: height * 0.03),
+                    title: 'About App',
+                    onTap: (){},
+                  ),
+                  ProfileOptionTile(
+                    leading: Icon(Icons.logout, size: height * 0.03, color: Colors.red,),
+                    title: 'Logout',
+                    onTap: _showDialog,
+                    showDivider: false,
+                    textColor:Colors.red,
+                    arrowColor: Colors.red,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: height * 0.05),
+          ],
+        ),
+      ),
+    );
+  }
 
+  Widget sectionTitle(String title, double height) {
+    return Padding(
+      padding: EdgeInsets.only(left: 16, bottom: height * 0.01, top: height * 0.01),
+      child: Text(
+        title,
+        style: TextStyle(
+          color: Colors.black54,
+          fontSize: height * 0.02,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+}
 
+// REUSABLE TILE
+class ProfileOptionTile extends StatelessWidget {
+  final Widget leading;
+  final String title;
+  final VoidCallback? onTap;
+  final bool showDivider;
+  final Color textColor;
+  final Color? arrowColor;
 
-             ],
-           ),
-         ),
-         SizedBox(height: height*0.04),
+  const ProfileOptionTile({
+    super.key,
+    required this.leading,
+    required this.title,
+    this.onTap,
+    this.showDivider = true,
+    this.textColor = Colors.black,
+    this.arrowColor,
+  });
 
-         //Game Settings
-         Padding(
-           padding:  EdgeInsets.only(left: width*0.05),
-           child: Text(
-             'Game Settings',
-             style: TextStyle(
-               color: Colors.black54,
-               fontWeight: FontWeight.w500,
-               fontSize: height*0.02,
-             ),
-           ),
-         ),
-         SizedBox(height: height*0.01),
-         Container(
-           decoration: BoxDecoration(
-             color: Colors.white,
-             borderRadius: BorderRadius.all(Radius.circular(20)),
-           ),
-           child:Column(
-             mainAxisAlignment: MainAxisAlignment.start,
-             crossAxisAlignment: CrossAxisAlignment.start,
-             children: [
-               Padding(
-                 padding: EdgeInsets.symmetric(
-                   horizontal: width * 0.05,
-                   vertical: height * 0.02,
-                 ),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     Row(
-                       children: [
-                         Icon(
-                           Icons.grid_on_rounded,
-                           color: Colors.black,
-                           size: height*0.03,
-                         ),
-                         SizedBox(width: width * 0.03),
-                         Text(
-                           'Scoring Display',
-                           style: TextStyle(
-                             color: Colors.black,
-                             fontSize: height * 0.02,
-                             fontWeight: FontWeight.w400,
-                           ),
-                         ),
-                       ],
-                     ),
-                     Icon(
-                       Icons.arrow_forward_ios,
-                       color: Colors.blueAccent,
-                       size: height * 0.02,
-                     ),
-                   ],
-                 ),
-               ),
-               Padding(
-                 padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-                 child: Container(
-                   height: 1.1,
-                   color: Colors.black26,
-                 ),
-               ),
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
 
-               Padding(
-                 padding: EdgeInsets.symmetric(
-                   horizontal: width * 0.05,
-                   vertical: height * 0.02,
-                 ),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     Row(
-                       children: [
-                         Icon(
-                           Icons.map_sharp,
-                           color: Colors.black,
-                           size: height*0.03,
-                         ),
-                         SizedBox(width: width * 0.03),
-                         Text(
-                           'Maps Settings',
-                           style: TextStyle(
-                             color: Colors.black,
-                             fontSize: height * 0.02,
-                             fontWeight: FontWeight.w400,
-                           ),
-                         ),
-                       ],
-                     ),
-                     Icon(
-                       Icons.arrow_forward_ios,
-                       color: Colors.blueAccent,
-                       size: height * 0.02,
-                     ),
-                   ],
-                 ),
-               ),
-               Padding(
-                 padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-                 child: Container(
-                   height: 1.1,
-                   color: Colors.black26,
-                 ),
-               ),
+    return Column(
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(0),
+            onTap: onTap,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: height * 0.02),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      leading,
+                      SizedBox(width: 12),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: height * 0.02,
+                          fontWeight: FontWeight.w400,
+                          color: textColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: height * 0.02,
+                    color: arrowColor ?? Colors.blueAccent,
 
-               Padding(
-                 padding: EdgeInsets.symmetric(
-                   horizontal: width * 0.05,
-                   vertical: height * 0.02,
-                 ),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     Row(
-                       children: [
-                         SvgPicture.asset(
-                           'images/clubs.svg',
-                           width: height * 0.03,
-                           height: height * 0.03,
-                           colorFilter: const ColorFilter.mode(
-                             Colors.black,
-                             BlendMode.srcIn,
-                           ),
-                         ),
-                         SizedBox(width: width * 0.03),
-                         Text(
-                           'Clubs Settings',
-                           style: TextStyle(
-                             color: Colors.black,
-                             fontSize: height * 0.02,
-                             fontWeight: FontWeight.w400,
-                           ),
-                         ),
-                       ],
-                     ),
-                     Icon(
-                       Icons.arrow_forward_ios,
-                       color: Colors.blueAccent,
-                       size: height * 0.02,
-                     ),
-                   ],
-                 ),
-               ),
-
-
-
-             ],
-           ),
-         ),
-
-
-       ],
-     ),
-   );
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        if (showDivider)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              height: 1,
+              color: Colors.black26,
+            ),
+          ),
+      ],
+    );
   }
 }
