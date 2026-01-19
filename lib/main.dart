@@ -6,6 +6,7 @@ import 'register.dart';
 import 'login.dart';
 import 'user_prefs.dart';
 import 'profile.dart';
+import 'golfCourses.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => Login(),
         '/landing': (context) => const LandingPage(),
         '/profile': (context) => const Profile(),
+        '/courses': (context) => const GolfCourses(),
       },
     );
   }

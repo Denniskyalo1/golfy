@@ -12,7 +12,6 @@ class UserPrefs {
     await prefs.setString('userEmail', email);
     await prefs.setString('userRole', role);
     await prefs.setString('authToken', token);
-
   }
 
     static Future<String?> getUserName() async {
