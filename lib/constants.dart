@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 const String baseUrl = "http://10.0.2.2:8000/api";
+const String apiKey = "AIzaSyB5AnPgdLPqQ5T6FxmcQ8oHpYlMkOaGunc";
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
@@ -21,7 +22,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
     final double height = MediaQuery.of(context).size.height;
 
     return AppBar(
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? Colors.blueGrey[100],
       elevation: 0,
       centerTitle: true,
       title: title != null
@@ -35,13 +36,15 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       leading: showBackButton
           ? IconButton(
-        icon: const Icon(Icons.arrow_back, size: 30),
+        icon: Icon(Icons.arrow_back_ios_new, size: height*0.03),
         onPressed: () {
           Navigator.pop(context);
         },
       )
           : null,
-      actions: actions, // Added this
+      actions: actions,
+
+
     );
   }
 

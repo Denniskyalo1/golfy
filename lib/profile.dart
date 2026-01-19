@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:golfy/constants.dart';
 import 'user_prefs.dart';
 
 class Profile extends StatefulWidget {
@@ -10,44 +11,35 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  void _showDialog(){
+  void _showDialog() {
     showDialog(
-        context: context,
-        builder: (context){
-          return AlertDialog(
-            title: Text('Log Out'),
-            content: Text(
-              'Are you sure you want to Log out? Click yes to proceed.',
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Log Out'),
+          content: Text(
+            'Are you sure you want to Log out? Click yes to proceed.',
+          ),
+          actions: [
+            MaterialButton(onPressed: () {}, child: Text('No')),
+            MaterialButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await UserPrefs.clearUser();
+                if (context.mounted) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/login',
+                    (route) => false,
+                  );
+                }
+              },
+              child: Text('Yes', style: TextStyle(color: Colors.red)),
             ),
-            actions: [
-              MaterialButton(
-                  onPressed: (){},
-                child: Text('No'),
-              ),
-              MaterialButton(
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await UserPrefs.clearUser();
-                  if (context.mounted) {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/login',
-                          (route) => false,
-                    );
-                  }
-                },
-                child: Text('Yes',
-                style: TextStyle(
-                  color: Colors.red
-                ),),
-
-              )
-            ],
-
-          );
-        }
+          ],
+        );
+      },
     );
-
   }
 
   String userName = '';
@@ -75,18 +67,10 @@ class _ProfileState extends State<Profile> {
 
     return Scaffold(
       backgroundColor: Colors.blueGrey[100],
-      appBar: AppBar(
-        title: Text(
-          'P R O F I L E',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: height * 0.025,
-          ),
-        ),
-        centerTitle: true,
+      appBar: TopBar(
+        showBackButton: true,
         backgroundColor: Colors.white,
-        elevation: 0,
+        title: 'P R O F I L E',
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -190,23 +174,23 @@ class _ProfileState extends State<Profile> {
                   ProfileOptionTile(
                     leading: Icon(Icons.h_plus_mobiledata, size: height * 0.03),
                     title: 'Handicap Details',
-                    onTap: (){},
+                    onTap: () {},
                   ),
                   ProfileOptionTile(
                     leading: Icon(Icons.access_time, size: height * 0.03),
                     title: 'Recent Rounds',
-                    onTap: (){},
+                    onTap: () {},
                   ),
                   ProfileOptionTile(
                     leading: Icon(Icons.score_sharp, size: height * 0.03),
                     title: 'Scoring History',
-                    onTap: (){},
+                    onTap: () {},
                   ),
                   ProfileOptionTile(
                     leading: Icon(Icons.golf_course, size: height * 0.03),
                     title: 'Recent Courses',
                     showDivider: false,
-                    onTap: (){},
+                    onTap: () {},
                   ),
                 ],
               ),
@@ -226,12 +210,12 @@ class _ProfileState extends State<Profile> {
                   ProfileOptionTile(
                     leading: Icon(Icons.grid_on_rounded, size: height * 0.03),
                     title: 'Scoring Display',
-                    onTap: (){},
+                    onTap: () {},
                   ),
                   ProfileOptionTile(
                     leading: Icon(Icons.map_sharp, size: height * 0.03),
                     title: 'Maps Settings',
-                    onTap: (){},
+                    onTap: () {},
                   ),
                   ProfileOptionTile(
                     leading: SvgPicture.asset(
@@ -241,7 +225,7 @@ class _ProfileState extends State<Profile> {
                     ),
                     title: 'Clubs Settings',
                     showDivider: false,
-                    onTap: (){},
+                    onTap: () {},
                   ),
                 ],
               ),
@@ -261,13 +245,13 @@ class _ProfileState extends State<Profile> {
                   ProfileOptionTile(
                     leading: Icon(Icons.emoji_events, size: height * 0.03),
                     title: 'Achievements',
-                    onTap: (){},
+                    onTap: () {},
                   ),
                   ProfileOptionTile(
                     leading: Icon(Icons.workspace_premium, size: height * 0.03),
                     title: 'Badges',
                     showDivider: false,
-                    onTap: (){},
+                    onTap: () {},
                   ),
                 ],
               ),
@@ -286,24 +270,28 @@ class _ProfileState extends State<Profile> {
                   ProfileOptionTile(
                     leading: Icon(Icons.contact_support, size: height * 0.03),
                     title: 'Help & Support',
-                    onTap: (){},
+                    onTap: () {},
                   ),
                   ProfileOptionTile(
                     leading: Icon(Icons.feedback, size: height * 0.03),
                     title: 'Feedback',
-                    onTap: (){},
+                    onTap: () {},
                   ),
                   ProfileOptionTile(
                     leading: Icon(Icons.info_rounded, size: height * 0.03),
                     title: 'About App',
-                    onTap: (){},
+                    onTap: () {},
                   ),
                   ProfileOptionTile(
-                    leading: Icon(Icons.logout, size: height * 0.03, color: Colors.red,),
+                    leading: Icon(
+                      Icons.logout,
+                      size: height * 0.03,
+                      color: Colors.red,
+                    ),
                     title: 'Logout',
                     onTap: _showDialog,
                     showDivider: false,
-                    textColor:Colors.red,
+                    textColor: Colors.red,
                     arrowColor: Colors.red,
                   ),
                 ],
@@ -318,7 +306,11 @@ class _ProfileState extends State<Profile> {
 
   Widget sectionTitle(String title, double height) {
     return Padding(
-      padding: EdgeInsets.only(left: 16, bottom: height * 0.01, top: height * 0.01),
+      padding: EdgeInsets.only(
+        left: 16,
+        bottom: height * 0.01,
+        top: height * 0.01,
+      ),
       child: Text(
         title,
         style: TextStyle(
@@ -363,7 +355,10 @@ class ProfileOptionTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(0),
             onTap: onTap,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: height * 0.02),
+              padding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: height * 0.02,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -385,7 +380,6 @@ class ProfileOptionTile extends StatelessWidget {
                     Icons.arrow_forward_ios,
                     size: height * 0.02,
                     color: arrowColor ?? Colors.blueAccent,
-
                   ),
                 ],
               ),
@@ -395,10 +389,7 @@ class ProfileOptionTile extends StatelessWidget {
         if (showDivider)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              height: 1,
-              color: Colors.black26,
-            ),
+            child: Container(height: 1, color: Colors.black26),
           ),
       ],
     );

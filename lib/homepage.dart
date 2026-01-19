@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:golfy/constants.dart';
 import 'user_prefs.dart';
 import 'user_prefs.dart';
 
@@ -46,23 +47,12 @@ class _HomepageState extends State<Homepage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: Text(
-          'P A R F E C T',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white
-        ,
+      appBar: TopBar(
+        showBackButton: false,
+        backgroundColor: Colors.transparent,
+        title: 'P A R F E C T',
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.person),
-          )
+
         ],
       ),
       drawer: Drawer(
@@ -106,7 +96,7 @@ class _HomepageState extends State<Homepage> {
                   }),
                   _drawerItem(Icons.golf_course, 'Golf Courses', () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/golfCourses');
+                    Navigator.pushNamed(context, '/courses');
                   }),
                   _drawerItem(Icons.sports_golf, 'My Games', () {
                     if(userName.isEmpty){

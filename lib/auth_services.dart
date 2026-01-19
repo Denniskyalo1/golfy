@@ -26,10 +26,7 @@ class AuthService {
       }),
     );
 
-    return {
-      'status': response.statusCode,
-      'body': jsonDecode(response.body),
-    };
+
   }
 
   static Future<Map<String, dynamic>> login({
