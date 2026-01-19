@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:golfy/bag_clubs.dart';
 import 'package:golfy/landingPage.dart';
+import 'package:golfy/my_bag.dart';
 import 'homepage.dart';
 import 'register.dart';
 import 'login.dart';
@@ -33,7 +35,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => Login(),
         '/landing': (context) => const LandingPage(),
         '/profile': (context) => const Profile(),
-        '/courses': (context) => const GolfCourses(),
+        '/myBag' : (context) => const MyBag(),
+        '/bagClubs' : (context) => const BagClubs()
       },
     );
   }
