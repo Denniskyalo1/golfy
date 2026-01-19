@@ -16,6 +16,41 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+
+  void _showDialog(){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text(
+              'Log in successful!',
+            ),
+            actions: [
+              MaterialButton(
+                onPressed: (){
+                  Navigator.pop(context);
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/homePage',
+                          (route) => false,
+                    );
+                  }
+                },
+                child: Text('Ok',
+                  style: TextStyle(
+                      color: Colors.black
+                  ),),
+
+              )
+            ],
+
+          );
+        }
+    );
+
+  }
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -121,18 +156,15 @@ class _LoginState extends State<Login> {
 
                                                 if (status == 200 && body['user'] != null) {
                                                   final user = body['user'];
+                                                  final token = body['token'];
                                                   await UserPrefs.saveUser(
                                                     name: user['name'] ?? '',
                                                     email: user['email'] ?? '',
                                                     role: user['role'] ?? '',
-                                                    token: user['token'] ?? ''
+                                                    token: token ?? '',
                                                   );
                                                   if (!context.mounted) return;
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text('Login successful')),
-                                                  );
-
-                                                  Navigator.pushReplacementNamed(context, '/homePage');
+                                                  _showDialog();
                                                 } else {
                                                   ScaffoldMessenger.of(context).showSnackBar(
                                                     SnackBar(content: Text(body['message'] ?? 'Login failed')),

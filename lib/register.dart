@@ -19,6 +19,40 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  void _showDialog(){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text(
+              'Registration successful!',
+            ),
+            actions: [
+              MaterialButton(
+                onPressed: (){
+                  Navigator.pop(context);
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/homePage',
+                          (route) => false,
+                    );
+                  }
+                },
+                child: Text('Ok',
+                  style: TextStyle(
+                      color: Colors.black
+                  ),),
+
+              )
+            ],
+
+          );
+        }
+    );
+
+  }
   List<String> roles = [
     'player',
     'manager',
@@ -196,21 +230,18 @@ class _RegisterState extends State<Register> {
                                                 final body = result['body'];
 
                                                 final user = body['user'];
+                                                final token = body['token'];
                                                 await UserPrefs.saveUser(
-                                                  name: user['name'],
-                                                  email: user['email'],
-                                                  role: user['role'],
-                                                  token: user['token']
+                                                  name: user['name'] ?? '',
+                                                  email: user['email'] ?? '',
+                                                  role: user['role'] ?? '',
+                                                  token: token ?? '',
                                                 );
 
                                                 //Successful registration
                                                 if(!context.mounted) return;
                                                 if (status == 201) {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text(body['message'] ?? 'Registration successful')),
-                                                  );
-
-                                                  Navigator.pushReplacementNamed(context, '/homePage');
+                                                  _showDialog();
                                                   return;
                                                 }
 
