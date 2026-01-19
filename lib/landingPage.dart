@@ -117,7 +117,7 @@ class LandingPage extends StatelessWidget {
                               side: BorderSide(color: Colors.white, width: 1.5),
                             ),
                             onPressed: () {
-                              Navigator.pushReplacementNamed(context, '/homePage');},
+                              Navigator.pushReplacementNamed(context, '/login');},
                             child: Text(
                               'Get Started',
                               style: TextStyle(

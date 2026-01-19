@@ -130,7 +130,7 @@ class _HomepageState extends State<Homepage> {
                         BlendMode.srcIn,
                       ),
                     ),
-                    title: Text('My Clubs'),
+                    title: Text('My Bag'),
                     onTap: () {
                       if(userName.isEmpty){
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -141,7 +141,7 @@ class _HomepageState extends State<Homepage> {
                         return;
                       }
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, '/myClubs');
+                      Navigator.pushNamed(context, '/myBag');
                     },
                   ),
                   _drawerItem(Icons.group, 'Friends', () {

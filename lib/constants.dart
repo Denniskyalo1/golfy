@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const String baseUrl = "http://10.0.2.2:8000/api";
+const String baseUrl = "http://192.168.88.189:8000/api";
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;

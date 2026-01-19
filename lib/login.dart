@@ -122,10 +122,10 @@ class _LoginState extends State<Login> {
                                                 if (status == 200 && body['user'] != null) {
                                                   final user = body['user'];
                                                   await UserPrefs.saveUser(
-                                                    name: user['name'],
-                                                    email: user['email'],
-                                                    role: user['role'],
-                                                    token: user['token']
+                                                    name: user['name'] ?? '',
+                                                    email: user['email'] ?? '',
+                                                    role: user['role'] ?? '',
+                                                    token: user['token'] ?? ''
                                                   );
                                                   if (!context.mounted) return;
                                                   ScaffoldMessenger.of(context).showSnackBar(
