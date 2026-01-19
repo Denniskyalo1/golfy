@@ -11,22 +11,34 @@ class AuthService {
     required String passwordConfirmation,
     required String role,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/register'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: jsonEncode({
-        'name': name,
-        'email': email,
-        'password': password,
-        'password_confirmation': passwordConfirmation,
-        'role': role,
-      }),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/register'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+          'role': role,
+        }),
+      );
 
+      final body = response.body.isNotEmpty ? jsonDecode(response.body) : {};
 
+      return {
+        'status': response.statusCode,
+        'body': body,
+      };
+    } catch (e) {
+      return {
+        'status': 500,
+        'body': {'message': 'Server error. Please try again.'},
+      };
+    }
   }
 
   static Future<Map<String, dynamic>> login({
@@ -59,5 +71,4 @@ class AuthService {
       };
     }
   }
-
 }
