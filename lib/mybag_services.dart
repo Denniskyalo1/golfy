@@ -17,5 +17,3 @@ class MyBagServices {
       'body': body,
     };
   }
-
-}
