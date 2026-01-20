@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:golfy/bag_clubs.dart';
 import 'package:golfy/landingPage.dart';
@@ -8,10 +9,13 @@ import 'register.dart';
 import 'login.dart';
 import 'user_prefs.dart';
 import 'profile.dart';
+import 'golfCourses.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  await dotenv.load(fileName: ".env");
 
   runApp(const MyApp());
 }

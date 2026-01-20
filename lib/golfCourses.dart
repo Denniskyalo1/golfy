@@ -35,6 +35,8 @@ class _GolfCoursesState extends State<GolfCourses> {
             }
 
             if (snapshot.hasError || !snapshot.hasData) {
+              print('Error: ${snapshot.error}');
+              print('Stack trace: ${snapshot.stackTrace}');
               return const Center(child: Text('Error loading courses'));
             }
 
