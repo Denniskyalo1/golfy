@@ -8,7 +8,6 @@ import 'register.dart';
 import 'login.dart';
 import 'user_prefs.dart';
 import 'profile.dart';
-import 'golfCourses.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
