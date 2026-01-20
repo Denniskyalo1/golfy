@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-const String baseUrl = "http://10.0.2.2:8000/api";
-const String apiKey = "AIzaSyB5AnPgdLPqQ5T6FxmcQ8oHpYlMkOaGunc";
+final baseUrl = dotenv.env['API_BASE_URL'] ?? 'https://fallback.url';
+final apikey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
