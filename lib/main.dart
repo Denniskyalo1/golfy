@@ -36,7 +36,8 @@ class MyApp extends StatelessWidget {
         '/landing': (context) => const LandingPage(),
         '/profile': (context) => const Profile(),
         '/myBag' : (context) => const MyBag(),
-        '/bagClubs' : (context) => const BagClubs()
+        '/bagClubs' : (context) => const BagClubs(),
+        '/courses': (context) =>const GolfCourses(),
       },
     );
   }

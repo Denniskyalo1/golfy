@@ -3,9 +3,9 @@ import 'package:http/http.dart' as http;
 import 'constants.dart';
 
 class CourseServices {
-  static Future<List<dynamic>> getCourses() async {
+  static Future<Map<String, dynamic>> getCourses({int page = 1}) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/courses'),
+      Uri.parse('$baseUrl/courses?page=$page'),
       headers: {
         'Accept': 'application/json',
       },
@@ -13,7 +13,10 @@ class CourseServices {
 
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body);
-      return decoded['data'];
+      return {
+        'data': decoded['data'],
+        'meta': decoded['meta'],
+      };
     } else {
       throw Exception('Failed to load courses');
     }
@@ -38,5 +41,4 @@ class CourseServices {
 
     return null;
   }
-
 }
