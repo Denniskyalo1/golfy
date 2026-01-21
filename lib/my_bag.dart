@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-const listItems = ['Drivers', 'Woods', 'Hybrids', 'Irons', 'Wedges', 'Putters'];
+import 'bag_category.dart';
+import 'mybag_services.dart';
 
 class MyBag extends StatefulWidget {
   const MyBag({super.key});
@@ -10,6 +10,13 @@ class MyBag extends StatefulWidget {
 }
 
 class _MyBagState extends State<MyBag> {
+  late Future<List<BagCategory>> _categoriesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _categoriesFuture = MyBagServices.getCategories();
+  }
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -38,45 +45,52 @@ class _MyBagState extends State<MyBag> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: listItems.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: width * 0.02),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(20),
-                        onTap: () {
-                          Navigator.pushNamed(context, '/bagClubs');
-                        },
-                        child: ListTile(
-                          title: Text(listItems[index]),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios,
-                            size: height * 0.02,
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ),
-                    ),
+            child:
+            FutureBuilder<List<BagCategory>>(
+              future: _categoriesFuture,
+              builder: (context, snapshot) {
+                // 1️⃣ Loading state
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
                   );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-                    child: Container(height: 1, color: Colors.grey),
-                  );
-                },
-              ),
+                }
+
+                // 2️⃣ Error state
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+
+                // 3️⃣ Success state
+                final categories = snapshot.data!;
+
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(categories[index].category),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/bagClubs',
+                          arguments: categories[index].category,
+                        );
+                      },
+                    );
+                  },
+                  separatorBuilder: (_, __) => const Divider(),
+                );
+              },
             ),
+
+          ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
+
