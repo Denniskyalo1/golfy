@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:golfy/constants.dart';
 import 'user_prefs.dart';
-import 'user_prefs.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -13,193 +12,74 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  String userName = '';
+  String _userName = '';
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    loadUserName();
+    _loadUserName();
   }
 
-  void loadUserName() async {
+  Future<void> _loadUserName() async {
     final name = await UserPrefs.getUserName();
-    setState(() {
-      userName = name ?? '';
-    });
+    if (mounted) {
+      setState(() {
+        _userName = name ?? '';
+        _isLoading = false;
+      });
+    }
   }
+
+  void _navigateWithAuthCheck(String routeName) {
+    if (_userName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in first before proceeding.')),
+      );
+      Navigator.pop(context);
+      Navigator.pushNamed(context, '/login');
+      return;
+    }
+    Navigator.pop(context);
+    Navigator.pushNamed(context, routeName);
+  }
+
+  Future<void> _handleLogout() async {
+    Navigator.pop(context);
+    await UserPrefs.clearUser();
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/login',
+          (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
-    Widget _drawerItem(IconData icon, String title, VoidCallback onTap) {
-      return ListTile(
-        leading: Icon(icon, color: Colors.black),
-        title: Text(
-          title,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: height * 0.02,
-          ),
-        ),
-        onTap: onTap,
-      );
-    }
-
     return Scaffold(
-      appBar: TopBar(
+      appBar: const TopBar(
         showBackButton: false,
         backgroundColor: Colors.transparent,
         title: 'P A R F E C T',
-        actions: [
-
-        ],
       ),
-      drawer: Drawer(
-        backgroundColor: Colors.transparent,
-        child: ClipRRect(
-          borderRadius: BorderRadius.only(
-            topRight: Radius.circular(40),
-            bottomRight: Radius.circular(40),
-          ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-            child: Container(
-              color: Colors.white.withOpacity(0.15),
-              child: Column(
-                children: [
-                  DrawerHeader(
-                    child: Center(
-                      child: Text(
-                        'M E N U',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: height * 0.04,
-                        ),
-                      ),
-                    ),
-
-                  ),
-
-                  _drawerItem(Icons.home, 'Profile', () {
-                    if(userName.isEmpty){
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Please log in first before proceeding.'))
-                      );
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/login');
-                      return;
-                    }
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/profile');
-                  }),
-                  _drawerItem(Icons.golf_course, 'Golf Courses', () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/courses');
-                  }),
-                  _drawerItem(Icons.sports_golf, 'My Games', () {
-                    if(userName.isEmpty){
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please log in first before proceeding.'))
-                      );
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/login');
-                      return;
-                    }
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/myGames');
-                  }),
-                  ListTile(
-                    leading: SvgPicture.asset(
-                      'images/clubs.svg',
-                      width: 24,
-                      height: 24,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                    title: Text('My Bag'),
-                    onTap: () {
-                      if(userName.isEmpty){
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Please log in first before proceeding.'))
-                        );
-                        Navigator.pop(context);
-                        Navigator.pushNamed(context, '/login');
-                        return;
-                      }
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/myBag');
-                    },
-                  ),
-                  _drawerItem(Icons.group, 'Friends', () {
-                    if(userName.isEmpty){
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please log in first before proceeding.'))
-                      );
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/login');
-                      return;
-                    }
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/friends');
-                  }),
-                  _drawerItem(Icons.settings, 'Settings', () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/settings');
-                  }),
-                  _drawerItem(Icons.support_agent, 'Support', () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/support');
-                  }),
-
-                  Spacer(),
-
-                  Padding(
-                    padding: EdgeInsets.only(bottom: height * 0.05),
-                    child: ListTile(
-                      leading: Icon(Icons.logout, color: Colors.red[500]),
-                      title: Text(
-                        'Log Out',
-                        style: TextStyle(
-                          color: Colors.red[500],
-                          fontSize: height * 0.02,
-                        ),
-                      ),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        await UserPrefs.clearUser();
-                        if (context.mounted) {
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/login',
-                                (route) => false,
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+      drawer: _buildDrawer(context, height, width),
       body: SizedBox.expand(
         child: Stack(
           children: [
-            Positioned.fill(
+            const Positioned.fill(
               child: Image(
                 image: AssetImage('images/wallpaper.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
+
             SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Padding(
                     padding: EdgeInsets.only(
@@ -215,10 +95,18 @@ class _HomepageState extends State<Homepage> {
                       ),
                     ),
                   ),
+
                   Padding(
                     padding: EdgeInsets.only(left: width * 0.05),
-                    child: Text(
-                      userName,
+                    child: _isLoading
+                        ? SizedBox(
+                      height: height * 0.05,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    )
+                        : Text(
+                      _userName.isEmpty ? 'Guest' : _userName,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: height * 0.05,
@@ -226,23 +114,160 @@ class _HomepageState extends State<Homepage> {
                       ),
                     ),
                   ),
-                   SizedBox(height: height * 0.04,),
+
+                  SizedBox(height: height * 0.04),
+
                   Padding(
-                    padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05),
+                    padding: EdgeInsets.symmetric(horizontal: width * 0.05),
                     child: Container(
                       height: height * 0.35,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.yellow,
-                        borderRadius: BorderRadius.all(Radius.circular(15))
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context, double height, double width) {
+    return Drawer(
+      backgroundColor: Colors.transparent,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(40),
+          bottomRight: Radius.circular(40),
+        ),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+          child: Container(
+            color: Colors.white.withOpacity(0.15),
+            child: Column(
+              children: [
+                DrawerHeader(
+                  child: Center(
+                    child: Text(
+                      'M E N U',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: height * 0.04,
+                      ),
+                    ),
+                  ),
+                ),
+
+                _buildDrawerItem(
+                  icon: Icons.home,
+                  title: 'Profile',
+                  onTap: () => _navigateWithAuthCheck('/profile'),
+                  height: height,
+                ),
+
+                _buildDrawerItem(
+                  icon: Icons.golf_course,
+                  title: 'Golf Courses',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/courses');
+                  },
+                  height: height,
+                ),
+
+                _buildDrawerItem(
+                  icon: Icons.sports_golf,
+                  title: 'My Games',
+                  onTap: () => _navigateWithAuthCheck('/myGames'),
+                  height: height,
+                ),
+
+                ListTile(
+                  leading: SvgPicture.asset(
+                    'images/clubs.svg',
+                    width: 24,
+                    height: 24,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.black,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  title: const Text('My Bag'),
+                  onTap: () => _navigateWithAuthCheck('/myBag'),
+                ),
+
+                _buildDrawerItem(
+                  icon: Icons.group,
+                  title: 'Friends',
+                  onTap: () => _navigateWithAuthCheck('/friends'),
+                  height: height,
+                ),
+
+                _buildDrawerItem(
+                  icon: Icons.settings,
+                  title: 'Settings',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/settings');
+                  },
+                  height: height,
+                ),
+
+                _buildDrawerItem(
+                  icon: Icons.support_agent,
+                  title: 'Support',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/support');
+                  },
+                  height: height,
+                ),
+
+                const Spacer(),
+
+                Padding(
+                  padding: EdgeInsets.only(bottom: height * 0.05),
+                  child: ListTile(
+                    leading: Icon(Icons.logout, color: Colors.red[500]),
+                    title: Text(
+                      'Log Out',
+                      style: TextStyle(
+                        color: Colors.red[500],
+                        fontSize: height * 0.02,
+                      ),
+                    ),
+                    onTap: _handleLogout,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    required double height,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.black),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: height * 0.02,
+        ),
+      ),
+      onTap: onTap,
     );
   }
 }

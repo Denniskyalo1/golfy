@@ -3,6 +3,18 @@ import 'package:http/http.dart' as http;
 import 'constants.dart';
 
 class AuthService {
+  AuthService._();
+
+  static const Map<String, String> _jsonHeaders = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
+
+  static const Map<String, dynamic> _defaultErrorResponse = {
+    'status': 500,
+    'body': {'message': 'Server error. Please try again.'},
+  };
+
 
   static Future<Map<String, dynamic>> register({
     required String name,
@@ -14,10 +26,7 @@ class AuthService {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/register'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: _jsonHeaders,
         body: jsonEncode({
           'name': name,
           'email': email,
@@ -27,17 +36,9 @@ class AuthService {
         }),
       );
 
-      final body = response.body.isNotEmpty ? jsonDecode(response.body) : {};
-
-      return {
-        'status': response.statusCode,
-        'body': body,
-      };
+      return _handleResponse(response);
     } catch (e) {
-      return {
-        'status': 500,
-        'body': {'message': 'Server error. Please try again.'},
-      };
+      return _handleError(e, 'Registration');
     }
   }
 
@@ -48,27 +49,31 @@ class AuthService {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: _jsonHeaders,
         body: jsonEncode({
           'email': email,
           'password': password,
         }),
       );
 
-      final body = response.body.isNotEmpty ? jsonDecode(response.body) : {};
-
-      return {
-        'status': response.statusCode,
-        'body': body,
-      };
+      return _handleResponse(response);
     } catch (e) {
-      return {
-        'status': 500,
-        'body': {'message': 'Server error. Please try again.'},
-      };
+      return _handleError(e, 'Login');
     }
+  }
+
+  static Map<String, dynamic> _handleResponse(http.Response response) {
+    final body = response.body.isNotEmpty
+        ? jsonDecode(response.body) as Map<String, dynamic>
+        : <String, dynamic>{};
+
+    return {
+      'status': response.statusCode,
+      'body': body,
+    };
+  }
+
+  static Map<String, dynamic> _handleError(Object error, String operation) {
+    return Map<String, dynamic>.from(_defaultErrorResponse);
   }
 }

@@ -10,6 +10,7 @@ import 'login.dart';
 import 'user_prefs.dart';
 import 'profile.dart';
 import 'golfCourses.dart';
+import 'selectedCourse.dart';
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -30,17 +31,19 @@ class MyApp extends StatelessWidget {
       title: 'Golfy',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        useMaterial3: true,
       ),
-      home: AuthCheck(),
+      home: const AuthCheck(),
       routes: {
         '/homePage': (context) => const Homepage(),
-        '/register': (context) => Register(),
+        '/register': (context) =>  Register(),
         '/login': (context) => Login(),
         '/landing': (context) => const LandingPage(),
         '/profile': (context) => const Profile(),
-        '/myBag' : (context) => const MyBag(),
-        '/bagClubs' : (context) => const BagClubs(),
-        '/courses': (context) =>const GolfCourses(),
+        '/myBag': (context) => const MyBag(),
+        '/bagClubs': (context) => const BagClubs(),
+        '/courses': (context) => const GolfCourses(),
+        '/selectedCourse': (context) => const SelectedCourse(),
       },
     );
   }
@@ -57,31 +60,37 @@ class _AuthCheckState extends State<AuthCheck> {
   @override
   void initState() {
     super.initState();
-    checkLoginStatus();
+    _checkLoginStatus();
   }
 
-  void checkLoginStatus() async {
-    final userName = await UserPrefs.getUserName();
-    final userEmail = await UserPrefs.getUserEmail();
+  Future<void> _checkLoginStatus() async {
 
-    await Future.delayed(Duration(milliseconds: 500));
+    final results = await Future.wait([
+      UserPrefs.getUserName(),
+      UserPrefs.getUserEmail(),
+    ]);
+
+    final userName = results[0];
+    final userEmail = results[1];
+
+    await Future.delayed(const Duration(milliseconds: 300));
 
     FlutterNativeSplash.remove();
 
     if (mounted) {
-      if (userName != null && userEmail != null) {
-        Navigator.pushReplacementNamed(context, '/homePage');
-      } else {
-        Navigator.pushReplacementNamed(context, '/landing');
-      }
+      final route = (userName != null && userEmail != null)
+          ? '/homePage'
+          : '/landing';
+
+      Navigator.pushReplacementNamed(context, route);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: Colors.white, // Match splash background
+    return const Scaffold(
+      body: ColoredBox(
+        color: Colors.white,
       ),
     );
   }
