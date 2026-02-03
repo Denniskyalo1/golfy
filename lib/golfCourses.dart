@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:golfy/constants.dart';
-import 'course_services.dart';
+import 'package:provider/provider.dart';
+import 'providers/courses_provider.dart';
 
 class GolfCourses extends StatefulWidget {
   const GolfCourses({super.key});
@@ -11,47 +11,6 @@ class GolfCourses extends StatefulWidget {
 }
 
 class _GolfCoursesState extends State<GolfCourses> {
-  int _currentPage = 1;
-  int _lastPage = 1;
-  bool _isRefreshing = false;
-
-  final Map<int, List<dynamic>> _pagesCache = {};
-
-  Future<void> _fetchPage(int page) async {
-    try {
-      final response = await CourseServices.getCourses(page: page);
-      if (response != null && response['data'] != null) {
-        _pagesCache[page] = response['data'];
-        _lastPage = response['meta']['last_page'] ?? 1;
-      }
-    } catch (e) {
-      debugPrint('Error fetching page $page: $e');
-      rethrow;
-    }
-  }
-
-  Future<void> _refreshCurrentPage() async {
-    setState(() => _isRefreshing = true);
-    try {
-      _pagesCache.remove(_currentPage);
-      await _fetchPage(_currentPage);
-    } finally {
-      setState(() => _isRefreshing = false);
-    }
-  }
-
-  void _goToNextPage() {
-    if (_currentPage < _lastPage) {
-      setState(() => _currentPage++);
-    }
-  }
-
-  void _goToPreviousPage() {
-    if (_currentPage > 1) {
-      setState(() => _currentPage--);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -64,47 +23,51 @@ class _GolfCoursesState extends State<GolfCourses> {
         backgroundColor: Colors.transparent,
         showBackButton: true,
       ),
-      body: FutureBuilder<void>(
-        key: ValueKey(_currentPage),
-        future: _pagesCache.containsKey(_currentPage)
-            ? Future.value() // Already cached
-            : _fetchPage(_currentPage),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting && !_pagesCache.containsKey(_currentPage)) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Consumer<CoursesProvider>(
+        builder: (context, coursesProvider, child) {
+          return FutureBuilder<void>(
+            key: ValueKey(coursesProvider.currentPage),
+            future: coursesProvider.pagesCache.containsKey(coursesProvider.currentPage)
+                ? Future.value() // Already cached
+                : coursesProvider.fetchPage(coursesProvider.currentPage),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting && !coursesProvider.pagesCache.containsKey(coursesProvider.currentPage)) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          if (snapshot.hasError) {
-            return Center(child: Text('Error loading courses: ${snapshot.error}'));
-          }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error loading courses: ${snapshot.error}'));
+              }
 
-          final courses = _pagesCache[_currentPage] ?? [];
+              final courses = coursesProvider.pagesCache[coursesProvider.currentPage] ?? [];
 
-          if (courses.isEmpty) {
-            return const Center(child: Text('No courses available'));
-          }
+              if (courses.isEmpty) {
+                return const Center(child: Text('No courses available'));
+              }
 
-          return RefreshIndicator(
-            onRefresh: _refreshCurrentPage,
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: courses.length,
-                    itemBuilder: (context, index) {
-                      final course = courses[index];
-                      return _buildCourseCard(
-                        course: course,
-                        height: height,
-                        width: width,
-                      );
-                    },
-                  ),
+              return RefreshIndicator(
+                onRefresh: coursesProvider.refreshCurrentPage,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: courses.length,
+                        itemBuilder: (context, index) {
+                          final course = courses[index];
+                          return _buildCourseCard(
+                            course: course,
+                            height: height,
+                            width: width,
+                          );
+                        },
+                      ),
+                    ),
+                    _buildPaginationControls(coursesProvider),
+                  ],
                 ),
-                _buildPaginationControls(),
-              ],
-            ),
+              );
+            },
           );
         },
       ),
@@ -232,7 +195,7 @@ class _GolfCoursesState extends State<GolfCourses> {
     );
   }
 
-  Widget _buildPaginationControls() {
+  Widget _buildPaginationControls(CoursesProvider coursesProvider) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Row(
@@ -241,12 +204,12 @@ class _GolfCoursesState extends State<GolfCourses> {
           IconButton(
             icon: Icon(
               Icons.arrow_back_ios_new,
-              color: _currentPage > 1 ? Colors.blueAccent : Colors.grey,
+              color: coursesProvider.currentPage > 1 ? Colors.blueAccent : Colors.grey,
             ),
-            onPressed: _currentPage > 1 ? _goToPreviousPage : null,
+            onPressed: coursesProvider.currentPage > 1 ? coursesProvider.goToPreviousPage : null,
           ),
           Text(
-            'Page $_currentPage of $_lastPage',
+            'Page ${coursesProvider.currentPage} of ${coursesProvider.lastPage}',
             style: const TextStyle(
               fontWeight: FontWeight.w500,
             ),
@@ -254,9 +217,9 @@ class _GolfCoursesState extends State<GolfCourses> {
           IconButton(
             icon: Icon(
               Icons.arrow_forward_ios,
-              color: _currentPage < _lastPage ? Colors.blueAccent : Colors.grey,
+              color: coursesProvider.currentPage < coursesProvider.lastPage ? Colors.blueAccent : Colors.grey,
             ),
-            onPressed: _currentPage < _lastPage ? _goToNextPage : null,
+            onPressed: coursesProvider.currentPage < coursesProvider.lastPage ? coursesProvider.goToNextPage : null,
           ),
         ],
       ),
