@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:golfy/constants.dart';
-import 'user_prefs.dart';
+import 'package:provider/provider.dart';
+import 'providers/profile_provider.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -11,31 +12,6 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  String _userName = '';
-  String _userEmail = '';
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserDetails();
-  }
-
-  Future<void> _loadUserDetails() async {
-    final results = await Future.wait([
-      UserPrefs.getUserName(),
-      UserPrefs.getUserEmail(),
-    ]);
-
-    if (mounted) {
-      setState(() {
-        _userName = results[0] ?? '';
-        _userEmail = results[1] ?? '';
-        _isLoading = false;
-      });
-    }
-  }
-
   void _showLogoutDialog() {
     showDialog(
       context: context,
@@ -64,8 +40,8 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<void> _handleLogout() async {
-    Navigator.pop(context); // Close dialog
-    await UserPrefs.clearUser();
+    Navigator.pop(context);
+    await context.read<ProfileProvider>().logout();
     if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(
       context,
@@ -86,47 +62,51 @@ class _ProfileState extends State<Profile> {
         backgroundColor: Colors.white,
         title: 'P R O F I L E',
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // USER DETAILS
-            _buildUserDetailsCard(context, height, width),
+      body: Consumer<ProfileProvider>(
+        builder: (context, profileProvider, child) {
+          return profileProvider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // USER DETAILS
+                _buildUserDetailsCard(context, height, width, profileProvider),
 
-            SizedBox(height: height * 0.03),
+                SizedBox(height: height * 0.03),
 
-            // PLAYER PERFORMANCE
-            _buildSectionTitle('Player Performance', height),
-            _buildPlayerPerformanceSection(height),
+                // PLAYER PERFORMANCE
+                _buildSectionTitle('Player Performance', height),
+                _buildPlayerPerformanceSection(height),
 
-            SizedBox(height: height * 0.03),
+                SizedBox(height: height * 0.03),
 
-            // GAME SETTINGS
-            _buildSectionTitle('Game Settings', height),
-            _buildGameSettingsSection(height),
+                // GAME SETTINGS
+                _buildSectionTitle('Game Settings', height),
+                _buildGameSettingsSection(height),
 
-            SizedBox(height: height * 0.03),
+                SizedBox(height: height * 0.03),
 
-            // ACHIEVEMENTS & BADGES
-            _buildSectionTitle('Achievements & Badges', height),
-            _buildAchievementsSection(height),
+                // ACHIEVEMENTS & BADGES
+                _buildSectionTitle('Achievements & Badges', height),
+                _buildAchievementsSection(height),
 
-            SizedBox(height: height * 0.05),
+                SizedBox(height: height * 0.05),
 
-            // APP & SUPPORT
-            _buildSectionTitle('App & Support', height),
-            _buildAppSupportSection(height),
+                // APP & SUPPORT
+                _buildSectionTitle('App & Support', height),
+                _buildAppSupportSection(height),
 
-            SizedBox(height: height * 0.05),
-          ],
-        ),
+                SizedBox(height: height * 0.05),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildUserDetailsCard(BuildContext context, double height, double width) {
+  Widget _buildUserDetailsCard(BuildContext context, double height, double width, ProfileProvider profileProvider) {
     return Container(
       width: width,
       height: height * 0.15,
@@ -167,7 +147,7 @@ class _ProfileState extends State<Profile> {
                       SizedBox(
                         width: width * 0.4,
                         child: Text(
-                          _userName,
+                          profileProvider.userName,
                           style: TextStyle(
                             fontSize: height * 0.02,
                             fontWeight: FontWeight.w400,
@@ -177,7 +157,7 @@ class _ProfileState extends State<Profile> {
                       SizedBox(
                         width: width * 0.4,
                         child: Text(
-                          _userEmail,
+                          profileProvider.userEmail,
                           style: TextStyle(
                             fontSize: height * 0.018,
                             color: Colors.grey,

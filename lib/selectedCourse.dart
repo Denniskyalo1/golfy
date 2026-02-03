@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'course_services.dart';
+import 'package:provider/provider.dart';
+import 'providers/selectedCourse_provider.dart';
 
 class SelectedCourse extends StatefulWidget {
   const SelectedCourse({super.key});
@@ -10,36 +11,16 @@ class SelectedCourse extends StatefulWidget {
 
 class _SelectedCourseState extends State<SelectedCourse> {
   late int _courseId;
-  Map<String, dynamic>? _course;
-  bool _isLoading = true;
-  String? _error;
+  bool _hasLoadedCourse = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    if (_isLoading) {
+    if (!_hasLoadedCourse) {
       _courseId = ModalRoute.of(context)!.settings.arguments as int;
-      _loadCourse();
-    }
-  }
-
-  Future<void> _loadCourse() async {
-    try {
-      final courseData = await CourseServices.getSelectedCourse(_courseId);
-      if (mounted) {
-        setState(() {
-          _course = courseData;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = 'Failed to load course details';
-          _isLoading = false;
-        });
-      }
+      context.read<SelectedCourseProvider>().loadCourse(_courseId);
+      _hasLoadedCourse = true;
     }
   }
 
@@ -48,53 +29,57 @@ class _SelectedCourseState extends State<SelectedCourse> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
-    if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
+    return Consumer<SelectedCourseProvider>(
+      builder: (context, selectedCourseProvider, child) {
+        if (selectedCourseProvider.isLoading) {
+          return const Scaffold(
+            backgroundColor: Colors.white,
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
 
-    if (_error != null || _course == null) {
-      return Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(_error ?? 'Course not found'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Go Back'),
+        if (selectedCourseProvider.error != null || selectedCourseProvider.course == null) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(selectedCourseProvider.error ?? 'Course not found'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Go Back'),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      );
-    }
+            ),
+          );
+        }
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context, height, width),
-            _buildCourseDetails(width),
-            const Divider(),
-            _buildInformationSection(width, height),
-          ],
-        ),
-      ),
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(context, height, width, selectedCourseProvider),
+                _buildCourseDetails(width, selectedCourseProvider),
+                const Divider(),
+                _buildInformationSection(width, height, selectedCourseProvider),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildHeader(BuildContext context, double height, double width) {
-    final coverImage = _course!['cover_image'] as String?;
+  Widget _buildHeader(BuildContext context, double height, double width, SelectedCourseProvider selectedCourseProvider) {
+    final coverImage = selectedCourseProvider.course!['cover_image'] as String?;
     final hasValidImage = coverImage != null && coverImage.isNotEmpty;
 
     return Stack(
@@ -138,8 +123,8 @@ class _SelectedCourseState extends State<SelectedCourse> {
     );
   }
 
-  Widget _buildCourseDetails(double width) {
-    final location = _course!['location'] as Map<String, dynamic>?;
+  Widget _buildCourseDetails(double width, SelectedCourseProvider selectedCourseProvider) {
+    final location = selectedCourseProvider.course!['location'] as Map<String, dynamic>?;
     final city = location?['city'] ?? '';
     final country = location?['country'] ?? '';
 
@@ -149,7 +134,7 @@ class _SelectedCourseState extends State<SelectedCourse> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _course!['name'] ?? '',
+            selectedCourseProvider.course!['name'] ?? '',
             style: TextStyle(
               fontSize: width * 0.07,
               fontWeight: FontWeight.w600,
@@ -190,7 +175,7 @@ class _SelectedCourseState extends State<SelectedCourse> {
     );
   }
 
-  Widget _buildInformationSection(double width, double height) {
+  Widget _buildInformationSection(double width, double height, SelectedCourseProvider selectedCourseProvider) {
     return Padding(
       padding: EdgeInsets.all(width * 0.05),
       child: Column(
@@ -209,14 +194,14 @@ class _SelectedCourseState extends State<SelectedCourse> {
             children: [
               _buildInfoItem(
                 icon: Icons.star,
-                value: _course!['rating']?.toString() ?? '0',
-                label: '${_course!['reviews_count']?.toString() ?? '0'} reviews',
+                value: selectedCourseProvider.course!['rating']?.toString() ?? '0',
+                label: '${selectedCourseProvider.course!['reviews_count']?.toString() ?? '0'} reviews',
                 width: width,
               ),
               _buildDivider(height),
               _buildInfoItem(
                 icon: Icons.favorite,
-                value: _course!['likes_count']?.toString() ?? '0',
+                value: selectedCourseProvider.course!['likes_count']?.toString() ?? '0',
                 label: 'Likes',
                 width: width,
                 iconColor: Colors.red,
@@ -224,7 +209,7 @@ class _SelectedCourseState extends State<SelectedCourse> {
               _buildDivider(height),
               _buildInfoItem(
                 icon: Icons.golf_course,
-                value: _course!['holes']?.toString() ?? '18',
+                value: selectedCourseProvider.course!['holes']?.toString() ?? '18',
                 label: 'Holes',
                 width: width,
               ),
