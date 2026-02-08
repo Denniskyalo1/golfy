@@ -77,7 +77,7 @@ class RegisterProvider extends ChangeNotifier {
         );
 
         if(!context.mounted) return;
-        _showSuccessDialog(context);
+        _showSuccessDialog(context, email);
         return;
       }
 
@@ -110,33 +110,29 @@ class RegisterProvider extends ChangeNotifier {
     );
   }
 
-  void _showSuccessDialog(BuildContext context) {
+  void _showSuccessDialog(BuildContext context, String email) {
     if (!context.mounted) return;
-
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
         title: const Text('Success'),
-        content: const Text('Registration successful!'),
-        actions: [
-          MaterialButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/homePage',
-                    (route) => false,
-              );
-            },
-            child: const Text(
-              'Ok',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-        ],
+        content: const Text(
+            'Registration successful! A verification email has been sent.'
+        ),
       ),
     );
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacementNamed(
+        '/otpVerification',
+          arguments: email
+      );
+    });
   }
+
 
   @override
   void dispose() {

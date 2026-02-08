@@ -47,7 +47,7 @@ class Homepage extends StatelessWidget {
     return Scaffold(
       appBar: const TopBar(
         showBackButton: false,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         title: 'P A R F E C T',
       ),
       drawer: _buildDrawer(context, provider, height, width),
@@ -159,8 +159,7 @@ class Homepage extends StatelessWidget {
                     'images/clubs.svg',
                     width: 24,
                     height: 24,
-                    colorFilter:
-                    const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(Colors.grey[700]!, BlendMode.srcIn),
                   ),
                   title: const Text('My Bag'),
                   onTap: () =>

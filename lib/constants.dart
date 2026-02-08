@@ -8,6 +8,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final Color backgroundColor;
   final bool showBackButton;
+  final String? route;
   final List<Widget>? actions;
 
   const TopBar({
@@ -16,6 +17,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
     this.backgroundColor = Colors.green,
     this.showBackButton = true,
     this.actions,
+    this.route,
+
   });
 
   @override
@@ -38,7 +41,9 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
       leading: showBackButton
           ? IconButton(
         icon: Icon(Icons.arrow_back_ios_new, size: height * 0.03),
-        onPressed: () => Navigator.pop(context),
+        onPressed: (){
+          Navigator.pushNamed(context, route!);
+        }
       )
           : null,
       actions: actions,

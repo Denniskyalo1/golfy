@@ -55,12 +55,13 @@ class AuthService {
           'password': password,
         }),
       );
-
       return _handleResponse(response);
     } catch (e) {
       return _handleError(e, 'Login');
     }
   }
+
+
 
   static Map<String, dynamic> _handleResponse(http.Response response) {
     final body = response.body.isNotEmpty
@@ -75,5 +76,36 @@ class AuthService {
 
   static Map<String, dynamic> _handleError(Object error, String operation) {
     return Map<String, dynamic>.from(_defaultErrorResponse);
+  }
+
+  static Future<Map<String, dynamic>> verifyOTP({
+    required String otp,
+    required String email,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/verify-email'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'email':email,
+          'otp': otp,
+        }),
+      );
+
+      final body = response.body.isNotEmpty ? jsonDecode(response.body) : {};
+
+      return {
+        'status': response.statusCode,
+        'body': body,
+      };
+    } catch (e) {
+      return {
+        'status': 500,
+        'body': {'message': 'Server error. Please try again.'},
+      };
+    }
   }
 }

@@ -59,7 +59,7 @@ class _ProfileState extends State<Profile> {
       backgroundColor: Colors.blueGrey[100],
       appBar: const TopBar(
         showBackButton: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white  ,
         title: 'P R O F I L E',
       ),
       body: Consumer<ProfileProvider>(

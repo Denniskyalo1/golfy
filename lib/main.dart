@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:golfy/providers/courses_provider.dart';
+import 'package:golfy/providers/otp_provider.dart';
 import 'package:golfy/providers/selectedCourse_provider.dart';
 import 'providers/auth_check_provider.dart';
 import 'package:golfy/providers/homepage_provider.dart';
@@ -18,6 +19,7 @@ import 'login.dart';
 import 'profile.dart';
 import 'golfCourses.dart';
 import 'selectedCourse.dart';
+import 'otpVerify.dart';
 
 
 Future<void> main() async {
@@ -43,12 +45,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => CoursesProvider()),
         ChangeNotifierProvider(create: (_) => SelectedCourseProvider()),
-
-
-
-
-
-
+        ChangeNotifierProvider(create: (_)=> OtpProvider()),
 
       ],
       child: MaterialApp(
@@ -69,6 +66,7 @@ class MyApp extends StatelessWidget {
           '/bagClubs': (context) => const BagClubs(),
           '/courses': (context) => const GolfCourses(),
           '/selectedCourse': (context) => const SelectedCourse(),
+          '/otpVerification': (context) => Otp(),
         },
       ),
     );
