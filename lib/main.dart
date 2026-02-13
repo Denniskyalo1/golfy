@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:provider/provider.dart';
+
 import 'package:golfy/providers/courses_provider.dart';
 import 'package:golfy/providers/otp_provider.dart';
 import 'package:golfy/providers/selectedCourse_provider.dart';
-import 'providers/auth_check_provider.dart';
+import 'package:golfy/providers/auth_check_provider.dart';
 import 'package:golfy/providers/homepage_provider.dart';
 import 'package:golfy/providers/login_provider.dart';
 import 'package:golfy/providers/profile_provider.dart';
 import 'package:golfy/providers/register_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:golfy/providers/theme_provider.dart';
+
+import 'package:golfy/theme/theme.dart';
+
 import 'package:golfy/bag_clubs.dart';
 import 'package:golfy/landingPage.dart';
 import 'package:golfy/my_bag.dart';
@@ -20,7 +25,6 @@ import 'profile.dart';
 import 'golfCourses.dart';
 import 'selectedCourse.dart';
 import 'otpVerify.dart';
-
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +42,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthCheckProvider()),
         ChangeNotifierProvider(create: (_) => RegisterProvider()),
         ChangeNotifierProvider(create: (_) => LoginProvider()),
@@ -45,28 +50,30 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => CoursesProvider()),
         ChangeNotifierProvider(create: (_) => SelectedCourseProvider()),
-        ChangeNotifierProvider(create: (_)=> OtpProvider()),
-
+        ChangeNotifierProvider(create: (_) => OtpProvider()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Golfy',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-        ),
-        home: const AuthCheck(),
-        routes: {
-          '/homePage': (context) => const Homepage(),
-          '/register': (context) => Register(),
-          '/login': (context) => Login(),
-          '/landing': (context) => const LandingPage(),
-          '/profile': (context) => const Profile(),
-          '/myBag': (context) => const MyBag(),
-          '/bagClubs': (context) => const BagClubs(),
-          '/courses': (context) => const GolfCourses(),
-          '/selectedCourse': (context) => const SelectedCourse(),
-          '/otpVerification': (context) => Otp(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Parfect',
+            theme: lightMode,
+            darkTheme: darkMode,
+            themeMode: themeProvider.themeMode,
+            home: const AuthCheck(),
+            routes: {
+              '/homePage': (context) => const Homepage(),
+              '/register': (context) => Register(),
+              '/login': (context) => Login(),
+              '/landing': (context) => const LandingPage(),
+              '/profile': (context) => const Profile(),
+              '/myBag': (context) => const MyBag(),
+              '/bagClubs': (context) => const BagClubs(),
+              '/courses': (context) => const GolfCourses(),
+              '/selectedCourse': (context) => const SelectedCourse(),
+              '/otpVerification': (context) => Otp(),
+            },
+          );
         },
       ),
     );
@@ -79,6 +86,7 @@ class AuthCheck extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<AuthCheckProvider>().checkLoginStatus(context);
+
     return const Scaffold(
       body: ColoredBox(
         color: Colors.white,

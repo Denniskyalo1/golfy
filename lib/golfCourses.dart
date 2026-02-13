@@ -17,24 +17,24 @@ class _GolfCoursesState extends State<GolfCourses> {
     final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.blueGrey[100],
-      appBar: const TopBar(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      appBar:  TopBar(
         title: 'C O U R S E S',
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         showBackButton: true,
+        route: '/homePage',
       ),
       body: Consumer<CoursesProvider>(
         builder: (context, coursesProvider, child) {
           return FutureBuilder<void>(
             key: ValueKey(coursesProvider.currentPage),
             future: coursesProvider.pagesCache.containsKey(coursesProvider.currentPage)
-                ? Future.value() // Already cached
+                ? Future.value()
                 : coursesProvider.fetchPage(coursesProvider.currentPage),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting && !coursesProvider.pagesCache.containsKey(coursesProvider.currentPage)) {
                 return const Center(child: CircularProgressIndicator());
               }
-
               if (snapshot.hasError) {
                 return Center(child: Text('Error loading courses: ${snapshot.error}'));
               }
@@ -47,6 +47,7 @@ class _GolfCoursesState extends State<GolfCourses> {
 
               return RefreshIndicator(
                 onRefresh: coursesProvider.refreshCurrentPage,
+                color: Theme.of(context).colorScheme.onSurface,
                 child: Column(
                   children: [
                     Expanded(
@@ -59,6 +60,7 @@ class _GolfCoursesState extends State<GolfCourses> {
                             course: course,
                             height: height,
                             width: width,
+                            isDark: Theme.of(context).brightness == Brightness.dark,
                           );
                         },
                       ),
@@ -78,6 +80,7 @@ class _GolfCoursesState extends State<GolfCourses> {
     required Map<String, dynamic> course,
     required double height,
     required double width,
+    required bool isDark,
   }) {
     final imageUrl = course['cover_image'] as String?;
     final hasValidImage = imageUrl != null && imageUrl.isNotEmpty;
@@ -87,6 +90,9 @@ class _GolfCoursesState extends State<GolfCourses> {
       height: height * 0.3,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark? Theme.of(context).colorScheme.onSurface : Colors.transparent,
+        ),
         image: DecorationImage(
           image: hasValidImage
               ? NetworkImage(imageUrl)
@@ -118,7 +124,7 @@ class _GolfCoursesState extends State<GolfCourses> {
                 Text(
                   course['name'] ?? 'Unknown Course',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: isDark ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.primary,
                     fontSize: height * 0.035,
                     fontWeight: FontWeight.bold,
                   ),
@@ -127,7 +133,7 @@ class _GolfCoursesState extends State<GolfCourses> {
                 Text(
                   course['location']?['city'] ?? 'Unknown City',
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: isDark ? Theme.of(context).colorScheme.onSurface.withOpacity(0.7) : Theme.of(context).colorScheme.primary.withOpacity(0.7),
                     fontSize: height * 0.02,
                   ),
                 ),
@@ -152,15 +158,19 @@ class _GolfCoursesState extends State<GolfCourses> {
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey[300],
+                      backgroundColor: isDark?  Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.primary ,
                       shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: isDark?  Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.primary,
+                        ),
                         borderRadius: BorderRadius.circular(10),
                       ),
+
                     ),
-                    child: const Text(
+                    child:  Text(
                       'Preview',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: isDark ?  Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -176,9 +186,12 @@ class _GolfCoursesState extends State<GolfCourses> {
                       backgroundColor: Colors.blueAccent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(
+                          color: Colors.blueAccent,
+                        )
                       ),
                     ),
-                    child: const Text(
+                    child:  Text(
                       'Play Golf',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,

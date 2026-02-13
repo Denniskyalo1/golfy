@@ -43,23 +43,20 @@ class Homepage extends StatelessWidget {
     final provider = context.watch<HomePageProvider>();
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
 
     return Scaffold(
-      appBar: const TopBar(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      appBar:  TopBar(
         showBackButton: false,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: 'P A R F E C T',
       ),
-      drawer: _buildDrawer(context, provider, height, width),
+      drawer: _buildDrawer(context, provider, height, width,isDarkMode ),
       body: SizedBox.expand(
         child: Stack(
           children: [
-            const Positioned.fill(
-              child: Image(
-                image: AssetImage('images/wallpaper.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
             SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,6 +71,7 @@ class Homepage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: height * 0.05,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface
                       ),
                     ),
                   ),
@@ -91,6 +89,7 @@ class Homepage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: height * 0.05,
                         fontWeight: FontWeight.bold,
+                         color: Theme.of(context).colorScheme.onSurface
                       ),
                     ),
                   ),
@@ -108,6 +107,7 @@ class Homepage extends StatelessWidget {
       HomePageProvider provider,
       double height,
       double width,
+      bool isDarkMode,
       ) {
     return Drawer(
       backgroundColor: Colors.transparent,
@@ -119,7 +119,21 @@ class Homepage extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
           child: Container(
-            color: Colors.white.withOpacity(0.15),
+
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(40),
+                bottomRight: Radius.circular(40),
+              ),
+              border: Border(
+                right: BorderSide(
+                  color: isDarkMode ? Theme.of(context).colorScheme.onSurface : Colors.transparent,
+                  width: 1.0,
+                ),
+              ),
+            ),
+
             child: Column(
               children: [
                 DrawerHeader(
@@ -129,6 +143,7 @@ class Homepage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: height * 0.04,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface
                       ),
                     ),
                   ),
@@ -138,6 +153,7 @@ class Homepage extends StatelessWidget {
                   'Profile',
                       () => _navigateWithAuthCheck(context, provider, '/profile'),
                   height,
+                  context
                 ),
                 _drawerItem(
                   Icons.golf_course,
@@ -147,21 +163,23 @@ class Homepage extends StatelessWidget {
                     Navigator.pushNamed(context, '/courses');
                   },
                   height,
+                  context
                 ),
                 _drawerItem(
                   Icons.sports_golf,
                   'My Games',
                       () => _navigateWithAuthCheck(context, provider, '/myGames'),
                   height,
+                  context
                 ),
                 ListTile(
                   leading: SvgPicture.asset(
                     'images/clubs.svg',
                     width: 24,
                     height: 24,
-                    colorFilter: ColorFilter.mode(Colors.grey[700]!, BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurface, BlendMode.srcIn),
                   ),
-                  title: const Text('My Bag'),
+                  title:  Text('My Bag', style: TextStyle(color: Theme.of(context).colorScheme.onSurface),),
                   onTap: () =>
                       _navigateWithAuthCheck(context, provider, '/myBag'),
                 ),
@@ -169,10 +187,10 @@ class Homepage extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(bottom: height * 0.05),
                   child: ListTile(
-                    leading: Icon(Icons.logout, color: Colors.red[500]),
+                    leading: Icon(Icons.logout, color: Theme.of(context).colorScheme.error,),
                     title: Text(
                       'Log Out',
-                      style: TextStyle(color: Colors.red[500]),
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                     onTap: () => _handleLogout(context, provider),
                   ),
@@ -190,10 +208,11 @@ class Homepage extends StatelessWidget {
       String title,
       VoidCallback onTap,
       double height,
+      BuildContext context,
       ) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title, style: TextStyle(fontSize: height * 0.02)),
+      title: Text(title, style: TextStyle(fontSize: height * 0.02, color: Theme.of(context).colorScheme.onSurface)),
       onTap: onTap,
     );
   }

@@ -28,9 +28,9 @@ class _ProfileState extends State<Profile> {
             ),
             MaterialButton(
               onPressed: _handleLogout,
-              child: const Text(
+              child:  Text(
                 'Yes',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
           ],
@@ -54,48 +54,52 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.blueGrey[100],
-      appBar: const TopBar(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      appBar:  TopBar(
         showBackButton: true,
-        backgroundColor: Colors.white  ,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: 'P R O F I L E',
+        route: '/homePage',
       ),
       body: Consumer<ProfileProvider>(
         builder: (context, profileProvider, child) {
           return profileProvider.isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ?  Center(child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary,
+          ))
               : SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // USER DETAILS
-                _buildUserDetailsCard(context, height, width, profileProvider),
+                _buildUserDetailsCard(context, height, width, profileProvider, isDark),
 
                 SizedBox(height: height * 0.03),
 
                 // PLAYER PERFORMANCE
-                _buildSectionTitle('Player Performance', height),
-                _buildPlayerPerformanceSection(height),
+                _buildSectionTitle('Player Performance', height, isDark),
+                _buildPlayerPerformanceSection(height, isDark),
 
                 SizedBox(height: height * 0.03),
 
                 // GAME SETTINGS
-                _buildSectionTitle('Game Settings', height),
-                _buildGameSettingsSection(height),
+                _buildSectionTitle('Game Settings', height, isDark),
+                _buildGameSettingsSection(height, isDark),
 
                 SizedBox(height: height * 0.03),
 
                 // ACHIEVEMENTS & BADGES
-                _buildSectionTitle('Achievements & Badges', height),
-                _buildAchievementsSection(height),
+                _buildSectionTitle('Achievements & Badges', height, isDark),
+                _buildAchievementsSection(height, isDark),
 
                 SizedBox(height: height * 0.05),
 
                 // APP & SUPPORT
-                _buildSectionTitle('App & Support', height),
-                _buildAppSupportSection(height),
+                _buildSectionTitle('App & Support', height, isDark),
+                _buildAppSupportSection(height, isDark),
 
                 SizedBox(height: height * 0.05),
               ],
@@ -106,12 +110,12 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _buildUserDetailsCard(BuildContext context, double height, double width, ProfileProvider profileProvider) {
+  Widget _buildUserDetailsCard(BuildContext context, double height, double width, ProfileProvider profileProvider, bool isDark) {
     return Container(
       width: width,
       height: height * 0.15,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration:  BoxDecoration(
+        color: isDark ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
@@ -130,7 +134,7 @@ class _ProfileState extends State<Profile> {
                     height: height * 0.11,
                     width: height * 0.11,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: isDark ?Theme.of(context).colorScheme.primary.withOpacity(0.2): Theme.of(context).colorScheme.onSecondary.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(50),
                       image: const DecorationImage(
                         image: AssetImage('images/profilepic.png'),
@@ -151,6 +155,7 @@ class _ProfileState extends State<Profile> {
                           style: TextStyle(
                             fontSize: height * 0.02,
                             fontWeight: FontWeight.w400,
+                            color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -160,7 +165,7 @@ class _ProfileState extends State<Profile> {
                           profileProvider.userEmail,
                           style: TextStyle(
                             fontSize: height * 0.018,
-                            color: Colors.grey,
+                            color: Theme.of(context).colorScheme.onSecondary,
                           ),
                         ),
                       ),
@@ -191,7 +196,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _buildPlayerPerformanceSection(double height) {
+  Widget _buildPlayerPerformanceSection(double height, bool isDark) {
     return Container(
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -200,22 +205,22 @@ class _ProfileState extends State<Profile> {
       child: Column(
         children: [
           ProfileOptionTile(
-            leading: Icon(Icons.h_plus_mobiledata, size: height * 0.03),
+            leading: Icon(Icons.h_plus_mobiledata, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'Handicap Details',
             onTap: () {},
           ),
           ProfileOptionTile(
-            leading: Icon(Icons.access_time, size: height * 0.03),
+            leading: Icon(Icons.access_time, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'Recent Rounds',
             onTap: () {},
           ),
           ProfileOptionTile(
-            leading: Icon(Icons.score_sharp, size: height * 0.03),
+            leading: Icon(Icons.score_sharp, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'Scoring History',
             onTap: () {},
           ),
           ProfileOptionTile(
-            leading: Icon(Icons.golf_course, size: height * 0.03),
+            leading: Icon(Icons.golf_course, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'Recent Courses',
             showDivider: false,
             onTap: () {},
@@ -225,7 +230,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _buildGameSettingsSection(double height) {
+  Widget _buildGameSettingsSection(double height, bool isDark) {
     return Container(
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -234,12 +239,12 @@ class _ProfileState extends State<Profile> {
       child: Column(
         children: [
           ProfileOptionTile(
-            leading: Icon(Icons.grid_on_rounded, size: height * 0.03),
+            leading: Icon(Icons.grid_on_rounded, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'Scoring Display',
             onTap: () {},
           ),
           ProfileOptionTile(
-            leading: Icon(Icons.map_sharp, size: height * 0.03),
+            leading: Icon(Icons.map_sharp, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'Maps Settings',
             onTap: () {},
           ),
@@ -258,7 +263,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _buildAchievementsSection(double height) {
+  Widget _buildAchievementsSection(double height, bool isDark) {
     return Container(
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -267,12 +272,12 @@ class _ProfileState extends State<Profile> {
       child: Column(
         children: [
           ProfileOptionTile(
-            leading: Icon(Icons.emoji_events, size: height * 0.03),
+            leading: Icon(Icons.emoji_events, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'Achievements',
             onTap: () {},
           ),
           ProfileOptionTile(
-            leading: Icon(Icons.workspace_premium, size: height * 0.03),
+            leading: Icon(Icons.workspace_premium, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'Badges',
             showDivider: false,
             onTap: () {},
@@ -282,7 +287,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _buildAppSupportSection(double height) {
+  Widget _buildAppSupportSection(double height, bool isDark) {
     return Container(
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -291,37 +296,37 @@ class _ProfileState extends State<Profile> {
       child: Column(
         children: [
           ProfileOptionTile(
-            leading: Icon(Icons.contact_support, size: height * 0.03),
+            leading: Icon(Icons.contact_support, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'Help & Support',
             onTap: () {},
           ),
           ProfileOptionTile(
-            leading: Icon(Icons.feedback, size: height * 0.03),
+            leading: Icon(Icons.feedback, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'Feedback',
             onTap: () {},
           ),
           ProfileOptionTile(
-            leading: Icon(Icons.info_rounded, size: height * 0.03),
+            leading: Icon(Icons.info_rounded, size: height * 0.03, color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,),
             title: 'About App',
             onTap: () {},
           ),
           ProfileOptionTile(
-            leading: const Icon(
+            leading:  Icon(
               Icons.logout,
-              color: Colors.red,
+              color: Theme.of(context).colorScheme.error,
             ),
             title: 'Logout',
             onTap: _showLogoutDialog,
             showDivider: false,
-            textColor: Colors.red,
-            arrowColor: Colors.red,
+            textColor: Theme.of(context).colorScheme.error,
+            arrowColor: Theme.of(context).colorScheme.error,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title, double height) {
+  Widget _buildSectionTitle(String title, double height, bool isDark) {
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -331,7 +336,7 @@ class _ProfileState extends State<Profile> {
       child: Text(
         title,
         style: TextStyle(
-          color: Colors.black54,
+          color: isDark ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurface,
           fontSize: height * 0.02,
           fontWeight: FontWeight.w500,
         ),
