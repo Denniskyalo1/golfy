@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:golfy/providers/like_course_provider.dart';
 import 'package:provider/provider.dart';
 import 'providers/selectedCourse_provider.dart';
+import 'providers/profile_provider.dart';
 
 class SelectedCourse extends StatefulWidget {
   const SelectedCourse({super.key});
@@ -19,7 +21,16 @@ class _SelectedCourseState extends State<SelectedCourse> {
 
     if (!_hasLoadedCourse) {
       _courseId = ModalRoute.of(context)!.settings.arguments as int;
-      context.read<SelectedCourseProvider>().loadCourse(_courseId);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Load the course details
+        context.read<SelectedCourseProvider>().loadCourse(_courseId);
+
+        // Fetch user's liked courses
+        final token = context.read<ProfileProvider>().userToken;
+        context.read<LikeCourseProvider>().fetchLikedCourses(token);
+            });
+
       _hasLoadedCourse = true;
     }
   }
@@ -165,14 +176,27 @@ class _SelectedCourseState extends State<SelectedCourse> {
                   _buildIconButton(Icons.calendar_month, isDark),
                 ],
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.favorite_border,
-                  color: Colors.red,
-                  size: 26,
-                ),
-              ),
+              Consumer<LikeCourseProvider>(
+                builder: (context, likeProvider, _) {
+                  if (likeProvider.isLoading) {
+                    return const SizedBox(
+                      height: 26,
+                      width: 26,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    );
+                  }
+
+                  final isLiked = likeProvider.isLiked(_courseId);
+                  return IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      isLiked ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.red,
+                      size: 26,
+                    ),
+                  );
+                },
+              )
             ],
           ),
         ],

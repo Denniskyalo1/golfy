@@ -72,6 +72,7 @@ class Register extends StatelessWidget {
                                     controller: provider.fullNameController,
                                     hintText: 'Full Names',
                                     obscureText: false,
+                                    textColor: Theme.of(context).colorScheme.onSecondary,
                                   ),
 
                                   SizedBox(height: height * 0.03),
@@ -80,6 +81,8 @@ class Register extends StatelessWidget {
                                     controller: provider.emailController,
                                     hintText: 'Email',
                                     obscureText: false,
+                                    textColor: Theme.of(context).colorScheme.onSecondary,
+
                                   ),
 
                                   SizedBox(height: height * 0.03),
@@ -97,7 +100,7 @@ class Register extends StatelessWidget {
                                         hint: Text(
                                           'Select role',
                                           style: TextStyle(
-                                            color: Colors.grey[700],
+                                            color: Theme.of(context).colorScheme.onSecondary,
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
@@ -119,6 +122,7 @@ class Register extends StatelessWidget {
                                     controller: provider.passwordController,
                                     hintText: 'Password',
                                     obscureText: true,
+                                    textColor: Theme.of(context).colorScheme.onSecondary,
                                   ),
 
                                   SizedBox(height: height * 0.03),
@@ -127,6 +131,7 @@ class Register extends StatelessWidget {
                                     controller: provider.passwordConfirmController,
                                     hintText: 'Confirm Password',
                                     obscureText: true,
+                                    textColor: Theme.of(context).colorScheme.onSecondary,
                                   ),
 
                                   SizedBox(height: height * 0.03),

@@ -71,7 +71,7 @@ class Login extends StatelessWidget {
                                     controller: provider.emailController,
                                     hintText: 'Email',
                                     obscureText: false,
-                                  ),
+                                    textColor: Theme.of(context).colorScheme.onSecondary,                                  ),
 
                                   SizedBox(height: height * 0.03),
 
@@ -79,6 +79,7 @@ class Login extends StatelessWidget {
                                     controller: provider.passwordController,
                                     hintText: 'Password',
                                     obscureText: true,
+                                    textColor: Theme.of(context).colorScheme.onSecondary,
                                   ),
 
                                   SizedBox(height: height * 0.03),

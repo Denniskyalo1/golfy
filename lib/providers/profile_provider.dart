@@ -4,6 +4,7 @@ import '../user_prefs.dart';
 class ProfileProvider extends ChangeNotifier {
   String userName = '';
   String userEmail = '';
+  String userToken = '';
   bool isLoading = true;
 
   ProfileProvider() {
@@ -14,10 +15,13 @@ class ProfileProvider extends ChangeNotifier {
     final results = await Future.wait([
       UserPrefs.getUserName(),
       UserPrefs.getUserEmail(),
+      UserPrefs.getAuthToken(),
     ]);
 
     userName = results[0] ?? '';
     userEmail = results[1] ?? '';
+    userToken = results[2] ?? '';
+
     isLoading = false;
     notifyListeners();
   }

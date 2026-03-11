@@ -12,6 +12,7 @@ import 'package:golfy/providers/login_provider.dart';
 import 'package:golfy/providers/profile_provider.dart';
 import 'package:golfy/providers/register_provider.dart';
 import 'package:golfy/providers/theme_provider.dart';
+import 'package:golfy/providers/like_course_provider.dart';
 
 import 'package:golfy/theme/theme.dart';
 
@@ -51,12 +52,13 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CoursesProvider()),
         ChangeNotifierProvider(create: (_) => SelectedCourseProvider()),
         ChangeNotifierProvider(create: (_) => OtpProvider()),
+        ChangeNotifierProvider(create: (_) => LikeCourseProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Parfect',
+            title: 'golfy',
             theme: lightMode,
             darkTheme: darkMode,
             themeMode: themeProvider.themeMode,

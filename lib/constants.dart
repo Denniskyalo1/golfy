@@ -62,6 +62,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
   final bool enabled;
+  final Color textColor;
 
   const CustomTextField({
     super.key,
@@ -71,6 +72,7 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType,
     this.textInputAction,
     this.onSubmitted,
+    required this.textColor,
     this.enabled = true,
   });
 
@@ -83,6 +85,9 @@ class CustomTextField extends StatelessWidget {
       textInputAction: textInputAction,
       onSubmitted: onSubmitted,
       enabled: enabled,
+      style: TextStyle(
+        color: Colors.black87,
+      ),
       decoration: InputDecoration(
         fillColor: Colors.white,
         filled: true,
@@ -108,6 +113,9 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
         hintText: hintText,
+        hintStyle: TextStyle(
+          color: textColor,
+        )
       ),
     );
   }

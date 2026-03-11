@@ -83,9 +83,9 @@ class LoginProvider extends ChangeNotifier {
                     (route) => false,
               );
             },
-            child: const Text(
+            child: Text(
               'Ok',
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
           ),
         ],
